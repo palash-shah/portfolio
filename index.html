@@ -4,6 +4,14 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Palash Shah — Quantitative Finance & Prediction Markets</title>
+<meta name="description" content="Palash Shah is a quantitative researcher at Carnegie Mellon University. He develops derivatives frameworks for prediction markets — option pricing on bounded underlyings, belief volatility, market making, and margin methodology — alongside ML research on implied volatility.">
+<meta property="og:title" content="Palash Shah — Quantitative Finance & Prediction Markets">
+<meta property="og:description" content="Quantitative researcher at Carnegie Mellon. Derivatives frameworks for prediction markets: option pricing on bounded underlyings, belief volatility, market microstructure, and ML on implied volatility.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23030304'/%3E%3Ctext x='32' y='44' font-family='Helvetica,Arial,sans-serif' font-size='34' font-weight='700' fill='%2300e5c8' text-anchor='middle'%3EPS%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
@@ -13,11 +21,8 @@
 :root{--bg:#030304;--bg2:#080810;--card:rgba(255,255,255,0.025);--card-h:rgba(255,255,255,0.055);--bdr:rgba(255,255,255,0.055);--bdr-h:rgba(255,255,255,0.12);--t1:#f0f0f3;--t2:rgba(255,255,255,0.5);--t3:rgba(255,255,255,0.28);--cyan:#00e5c8;--blue:#2997ff;--purple:#bf5af2;--green:#30d158;--orange:#ff9f0a;--pink:#ff375f;--teal:#64d2ff;--grad:linear-gradient(135deg,#00e5c8,#2997ff 40%,#bf5af2);--r-md:14px;--r-lg:22px;--r-xl:30px;--ease:cubic-bezier(.25,.46,.45,.94);--fd:'Space Grotesk','Inter',sans-serif;--fb:'Inter',-apple-system,sans-serif;--fm:'JetBrains Mono',monospace}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
-body{font-family:var(--fb);background:var(--bg);color:var(--t1);overflow-x:hidden;line-height:1.6;cursor:none}
+body{font-family:var(--fb);background:var(--bg);color:var(--t1);overflow-x:hidden;line-height:1.6}
 ::selection{background:rgba(0,229,200,.25);color:#fff}
-.cursor-dot{position:fixed;width:8px;height:8px;border-radius:50%;background:var(--cyan);pointer-events:none;z-index:10000;mix-blend-mode:difference;transition:transform .1s}
-.cursor-ring{position:fixed;width:40px;height:40px;border-radius:50%;border:1.5px solid rgba(0,229,200,.4);pointer-events:none;z-index:9999;transition:width .3s,height .3s,border-color .3s;mix-blend-mode:difference}
-.cursor-ring.hover{width:60px;height:60px;border-color:rgba(0,229,200,.7)}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(0,229,200,.2);border-radius:2px}
 .orb{position:fixed;border-radius:50%;filter:blur(150px);opacity:.12;pointer-events:none;z-index:0}
 .orb-1{width:700px;height:700px;background:#00e5c8;top:-300px;left:-300px;animation:of1 25s ease-in-out infinite}
@@ -51,16 +56,17 @@ nav.scrolled{padding:14px 48px;background:rgba(3,3,4,.9)}
 .hero h1 .gt{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .hero-sub{font-size:clamp(1rem,1.8vw,1.15rem);color:var(--t2);max-width:580px;margin:0 auto 44px;line-height:1.8;animation:fiu .8s ease .3s forwards;opacity:0}
 .hero-tags{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;animation:fiu .8s ease .45s forwards;opacity:0}
-.hero-tag{padding:7px 16px;border-radius:20px;background:rgba(255,255,255,.025);border:1px solid var(--bdr);font-size:.76rem;color:var(--t3);font-weight:500;transition:all .3s;font-family:var(--fm);cursor:none}
+.hero-tag{padding:7px 16px;border-radius:20px;background:rgba(255,255,255,.025);border:1px solid var(--bdr);font-size:.76rem;color:var(--t3);font-weight:500;transition:all .3s;font-family:var(--fm);cursor:pointer}
 .hero-tag:hover{background:rgba(0,229,200,.06);border-color:rgba(0,229,200,.2);color:var(--cyan);transform:translateY(-2px)}
 .hero-scroll{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;animation:fiu .8s ease .6s forwards,float 3s ease-in-out infinite 1.5s;opacity:0}
 .hero-scroll span{font-size:.65rem;text-transform:uppercase;letter-spacing:.2em;color:var(--t3);font-family:var(--fm)}
 .scroll-line{width:1px;height:50px;background:linear-gradient(to bottom,var(--cyan),transparent);opacity:.4}
 @keyframes float{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(10px)}}
+@media(max-height:820px){.hero-scroll{display:none}}
 @keyframes fiu{from{opacity:0;transform:translateY(35px)}to{opacity:1;transform:translateY(0)}}
 
 /* ABOUT */
-#about{padding:160px 0 120px}
+#about{padding:160px 0 120px;position:relative;overflow:hidden}
 .about-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:80px;align-items:center}
 .about-visual{position:relative;display:flex;justify-content:center}
 .av-c{width:300px;height:300px;border-radius:50%;position:relative}
@@ -79,7 +85,7 @@ nav.scrolled{padding:14px 48px;background:rgba(3,3,4,.9)}
 .about-text p{color:var(--t2);line-height:1.85;margin-bottom:18px;font-size:.92rem}
 .about-text .hl{color:var(--cyan);font-weight:500}
 .about-links{display:flex;gap:14px;margin-top:32px}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;border-radius:26px;font-size:.82rem;font-weight:600;text-decoration:none;transition:all .3s;font-family:var(--fd);cursor:none}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 26px;border-radius:26px;font-size:.82rem;font-weight:600;text-decoration:none;transition:all .3s;font-family:var(--fd);cursor:pointer}
 .btn-p{background:var(--cyan);color:#030304}.btn-p:hover{background:#33ebd4;transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,229,200,.3)}
 .btn-g{background:rgba(255,255,255,.04);border:1px solid var(--bdr);color:var(--t1)}.btn-g:hover{background:rgba(255,255,255,.08);border-color:var(--bdr-h);transform:translateY(-2px)}
 
@@ -102,7 +108,7 @@ nav.scrolled{padding:14px 48px;background:rgba(3,3,4,.9)}
 
 /* PROJECT CARDS */
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:20px;position:relative;z-index:2}
-.pc{position:relative;padding:32px;border-radius:var(--r-lg);background:var(--card);border:1px solid var(--bdr);transition:all .45s var(--ease);overflow:hidden;cursor:none}
+.pc{position:relative;padding:32px;border-radius:var(--r-lg);background:var(--card);border:1px solid var(--bdr);transition:all .45s var(--ease);overflow:hidden;cursor:pointer}
 .pc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ca,var(--cyan));opacity:0;transition:opacity .4s}
 .pc:hover{background:var(--card-h);border-color:var(--bdr-h);transform:translateY(-6px);box-shadow:0 24px 60px rgba(0,0,0,.4)}
 .pc:hover::before{opacity:1}
@@ -127,7 +133,7 @@ nav.scrolled{padding:14px 48px;background:rgba(3,3,4,.9)}
 .pc:hover .click-hint{opacity:1}
 
 /* FEATURED */
-.fc{display:grid;grid-template-columns:1fr 1fr;gap:40px;padding:44px;border-radius:var(--r-xl);background:var(--card);border:1px solid var(--bdr);margin-bottom:20px;position:relative;z-index:2;transition:all .45s var(--ease);overflow:hidden;cursor:none}
+.fc{display:grid;grid-template-columns:1fr 1fr;gap:40px;padding:44px;border-radius:var(--r-xl);background:var(--card);border:1px solid var(--bdr);margin-bottom:20px;position:relative;z-index:2;transition:all .45s var(--ease);overflow:hidden;cursor:pointer}
 .fc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad)}
 .fc:hover{border-color:var(--bdr-h);transform:translateY(-4px);box-shadow:0 24px 60px rgba(0,0,0,.4)}
 .fc-vis{background:linear-gradient(135deg,rgba(0,229,200,.04),rgba(41,151,255,.04),rgba(191,90,242,.04));border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;min-height:280px;position:relative}
@@ -142,7 +148,7 @@ nav.scrolled{padding:14px 48px;background:rgba(3,3,4,.9)}
 
 /* RESEARCH */
 .rgrid{display:grid;grid-template-columns:1fr 1fr;gap:24px;position:relative;z-index:2}
-.rc{padding:44px;border-radius:var(--r-xl);background:var(--card);border:1px solid var(--bdr);transition:all .45s var(--ease);position:relative;overflow:hidden;cursor:none}
+.rc{padding:44px;border-radius:var(--r-xl);background:var(--card);border:1px solid var(--bdr);transition:all .45s var(--ease);position:relative;overflow:hidden;cursor:pointer}
 .rc:hover{transform:translateY(-4px);border-color:var(--bdr-h);box-shadow:0 20px 60px rgba(0,0,0,.35)}
 .ptag{display:inline-block;font-family:var(--fm);font-size:.65rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:5px 12px;border-radius:6px;margin-bottom:22px;color:var(--cyan);background:rgba(0,229,200,.08)}
 .rc h3{font-family:var(--fd);font-size:1.2rem;font-weight:600;letter-spacing:-.02em;line-height:1.4;margin-bottom:12px}
@@ -154,7 +160,7 @@ nav.scrolled{padding:14px 48px;background:rgba(3,3,4,.9)}
 .rc:hover .click-hint{opacity:1}
 
 /* TOOLBOX */
-#toolbox{padding:140px 0 100px}
+#toolbox{padding:140px 0 100px;position:relative;overflow:hidden}
 .tbgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;position:relative;z-index:2}
 .tc{padding:30px 24px;border-radius:var(--r-md);background:var(--card);border:1px solid var(--bdr);text-align:center;transition:all .35s}
 .tc:hover{background:var(--card-h);border-color:var(--bdr-h);transform:translateY(-4px)}
@@ -174,7 +180,7 @@ footer{padding:80px 48px 60px;text-align:center;border-top:1px solid var(--bdr);
 footer h3{font-family:var(--fd);font-size:1.5rem;font-weight:700;letter-spacing:-.03em;margin-bottom:14px}
 footer p{color:var(--t2);font-size:.88rem;margin-bottom:28px;line-height:1.7}
 .fl{display:flex;justify-content:center;gap:14px;margin-bottom:50px}
-.flk{padding:11px 28px;border-radius:24px;text-decoration:none;font-size:.82rem;font-weight:600;font-family:var(--fd);transition:all .3s;cursor:none}
+.flk{padding:11px 28px;border-radius:24px;text-decoration:none;font-size:.82rem;font-weight:600;font-family:var(--fd);transition:all .3s;cursor:pointer}
 .flk-p{background:var(--cyan);color:#030304}.flk-p:hover{background:#33ebd4;transform:translateY(-2px);box-shadow:0 8px 30px rgba(0,229,200,.3)}
 .flk-g{background:rgba(255,255,255,.04);border:1px solid var(--bdr);color:var(--t1)}.flk-g:hover{background:rgba(255,255,255,.08);transform:translateY(-2px)}
 .fcopy{font-family:var(--fm);font-size:.68rem;color:var(--t3)}
@@ -194,10 +200,10 @@ footer p{color:var(--t2);font-size:.88rem;margin-bottom:28px;line-height:1.7}
 .overlay{position:fixed;inset:0;z-index:5000;background:var(--bg);overflow-y:auto;transform:translateY(100%);transition:transform .5s var(--ease);scrollbar-width:thin}
 .overlay.open{transform:translateY(0)}
 .overlay-inner{max-width:900px;margin:0 auto;padding:100px 48px 80px}
-.ov-close{position:fixed;top:24px;right:36px;z-index:5100;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;color:var(--t2);font-size:1.2rem;cursor:none;transition:all .3s;font-family:var(--fd);opacity:0;pointer-events:none}
+.ov-close{position:fixed;top:24px;right:36px;z-index:5100;width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;color:var(--t2);font-size:1.2rem;cursor:pointer;transition:all .3s;font-family:var(--fd);opacity:0;pointer-events:none}
 .overlay.open .ov-close{opacity:1;pointer-events:auto}
 .ov-close:hover{background:rgba(255,255,255,.1);color:var(--t1);transform:scale(1.1)}
-.ov-back{position:fixed;top:24px;left:36px;z-index:5100;display:flex;align-items:center;gap:8px;color:var(--t3);font-size:.8rem;font-family:var(--fd);cursor:none;transition:color .3s;opacity:0;pointer-events:none;text-decoration:none;font-weight:500}
+.ov-back{position:fixed;top:24px;left:36px;z-index:5100;display:flex;align-items:center;gap:8px;color:var(--t3);font-size:.8rem;font-family:var(--fd);cursor:pointer;transition:color .3s;opacity:0;pointer-events:none;text-decoration:none;font-weight:500}
 .overlay.open .ov-back{opacity:1;pointer-events:auto}
 .ov-back:hover{color:var(--cyan)}
 
@@ -225,7 +231,7 @@ footer p{color:var(--t2);font-size:.88rem;margin-bottom:28px;line-height:1.7}
 .ov-slider-group label{display:flex;justify-content:space-between;font-size:.78rem;color:var(--t2);margin-bottom:8px;font-family:var(--fm)}
 .ov-slider-group label span{color:var(--cyan);font-weight:600}
 input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:4px;border-radius:2px;background:rgba(255,255,255,.1);outline:none}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:var(--cyan);cursor:none;box-shadow:0 0 8px rgba(0,229,200,.4)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:16px;height:16px;border-radius:50%;background:var(--cyan);cursor:pointer;box-shadow:0 0 8px rgba(0,229,200,.4)}
 
 .ov-btn{padding:8px 20px;border-radius:20px;background:rgba(0,229,200,.1);border:1px solid rgba(0,229,200,.2);color:var(--cyan);font-family:var(--fm);font-size:.75rem;font-weight:600;cursor:pointer;transition:all .3s;margin-right:8px;margin-bottom:8px}
 .ov-btn:hover{background:rgba(0,229,200,.2);transform:translateY(-1px)}
@@ -235,19 +241,17 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 .ov-chip{font-family:var(--fm);font-size:.7rem;padding:6px 14px;border-radius:8px;background:rgba(255,255,255,.03);border:1px solid var(--bdr);color:var(--t3)}
 
 /* Paper link */
-.paper-dl{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;border-radius:var(--r-md);background:rgba(0,229,200,.06);border:1px solid rgba(0,229,200,.15);color:var(--cyan);text-decoration:none;font-family:var(--fd);font-size:.88rem;font-weight:600;transition:all .3s;margin-bottom:32px;cursor:none}
+.paper-dl{display:inline-flex;align-items:center;gap:10px;padding:14px 28px;border-radius:var(--r-md);background:rgba(0,229,200,.06);border:1px solid rgba(0,229,200,.15);color:var(--cyan);text-decoration:none;font-family:var(--fd);font-size:.88rem;font-weight:600;transition:all .3s;margin-bottom:32px;cursor:pointer}
 .paper-dl:hover{background:rgba(0,229,200,.12);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,229,200,.15)}
 .paper-dl svg{width:20px;height:20px;fill:currentColor}
 
 /* RESPONSIVE */
 @media(max-width:1024px){.fc{grid-template-columns:1fr}.fc-vis{min-height:200px}.about-grid{grid-template-columns:1fr;gap:50px}.rgrid{grid-template-columns:1fr}.tbgrid{grid-template-columns:repeat(2,1fr)}.wm{font-size:clamp(5rem,12vw,10rem)}}
-@media(max-width:768px){body{cursor:auto}.cursor-dot,.cursor-ring{display:none}nav{padding:16px 24px}.nav-links{display:none}.container{padding:0 24px}.pgrid{grid-template-columns:1fr}.carousel .pc{width:320px}.cat-hdr{flex-wrap:wrap}.cat-count{margin-left:0}.cat-num{font-size:2.5rem}.fl-stat{display:none}.av-c{width:220px;height:220px}.av-init{font-size:4rem}.overlay-inner{padding:80px 24px 60px}}
+@media(max-width:768px){nav{padding:16px 24px}.nav-links{display:none}.container{padding:0 24px}.pgrid{grid-template-columns:1fr}.carousel .pc{width:320px}.cat-hdr{flex-wrap:wrap}.cat-count{margin-left:0}.cat-num{font-size:2.5rem}.fl-stat{display:none}.av-c{width:220px;height:220px}.av-init{font-size:4rem}.overlay-inner{padding:80px 24px 60px}}
 </style>
 </head>
 <body>
 
-<div class="cursor-dot" id="cDot"></div>
-<div class="cursor-ring" id="cRing"></div>
 <div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
 
 <!-- NAV -->
@@ -269,7 +273,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
   <div class="hero-content">
     <div class="hero-badge"><span class="dot"></span>Building the derivatives layer for prediction markets</div>
     <h1><span class="line">Palash</span><span class="line gt">Shah</span></h1>
-    <p class="hero-sub">Quantitative researcher at Carnegie Mellon University. Developing mathematical frameworks that bridge prediction markets and institutional derivatives infrastructure.</p>
+    <p class="hero-sub">Quantitative researcher at Carnegie Mellon University. I develop the mathematics that lets prediction markets trade like real derivatives markets &mdash; option pricing on bounded underlyings, belief volatility, market making, and margin &mdash; and build the systems that run on it.</p>
     <div class="hero-tags">
       <span class="hero-tag">Option-Implied Event Contracts</span>
       <span class="hero-tag">Jacobi Diffusion</span>
@@ -290,16 +294,17 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
         <div class="av-c"><div class="av-ring"></div><div class="av-inner"><span class="av-init">PS</span></div></div>
         <div class="fl-stat s1"><div class="v">CMU</div><div class="lb">Carnegie Mellon University</div></div>
         <div class="fl-stat s2"><div class="v">2</div><div class="lb">Research Papers</div></div>
-        <div class="fl-stat s3"><div class="v">18+</div><div class="lb">Projects</div></div>
+        <div class="fl-stat s3"><div class="v">15</div><div class="lb">Projects</div></div>
       </div>
       <div class="about-text rv" style="transition-delay:.2s">
-        <h3>Quantitative researcher building the future of event&#8209;driven markets.</h3>
-        <p>I'm <span class="hl">Palash Shah</span>, a student at <span class="hl">Carnegie Mellon University</span> working at the intersection of mathematical finance, machine learning, and prediction market design.</p>
-        <p>My current paradigm focuses on <span class="hl">Option-Implied Event Contracts</span> &mdash; a complete derivatives framework that treats prediction market prices as bounded stochastic underlyings via the Jacobi diffusion. This enables options, variance swaps, and Greeks-based hedging on event futures for the first time.</p>
-        <p>Alongside, I research implied volatility surfaces through spectral clustering, LSTM forecasting, and reinforcement learning for regime-adaptive trading strategies.</p>
+        <h3>I make markets that trade probabilities behave like markets you can actually hedge.</h3>
+        <p>I'm <span class="hl">Palash Shah</span>, a student at <span class="hl">Carnegie Mellon University</span> working at the intersection of mathematical finance, machine learning, and market design.</p>
+        <p>My core research is <span class="hl">Option-Implied Event Contracts</span> &mdash; a complete derivatives framework that treats a prediction market price as a bounded stochastic underlying via the Jacobi diffusion. It derives closed-form option pricing, a full Greeks calculus, variance swaps on beliefs, and the margin methodology an exchange would need to clear these products.</p>
+        <p>The theorems don't stay on paper: each framework here is paired with working systems &mdash; pricing engines, calibrators, market-making simulators, hedging engines. Alongside, I research implied volatility surfaces through spectral clustering, LSTM forecasting, and reinforcement learning.</p>
         <div class="about-links">
           <a href="https://www.linkedin.com/in/palash-shah-me/" target="_blank" class="btn btn-p">LinkedIn &rarr;</a>
-          <a href="mailto:palash.shah08@gmail.com" class="btn btn-g">palash.shah08@gmail.com</a>
+          <a href="https://github.com/palash-shah" target="_blank" class="btn btn-g">GitHub</a>
+          <a href="mailto:palash.shah08@gmail.com" class="btn btn-g">Email</a>
         </div>
       </div>
     </div>
@@ -378,9 +383,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 <section class="cat-sec" id="research">
   <div class="wm c" style="top:80px">RESEARCH</div>
   <div class="container">
-    <div class="cat-hdr rv"><div class="cat-num">04</div><div class="cat-info"><h2>Research & Publications</h2><p>Original academic papers and theoretical contributions to quantitative finance and prediction market theory.</p></div><span class="cat-count">3 publications</span></div>
+    <div class="cat-hdr rv"><div class="cat-num">04</div><div class="cat-info"><h2>Research & Publications</h2><p>Original working papers and theoretical contributions to quantitative finance and prediction market theory.</p></div><span class="cat-count">2 papers &middot; 1 framework</span></div>
     <div class="rgrid sg">
-      <div class="rc" data-project="paper-oiec"><span class="ptag">Working Paper &middot; Feb 2026</span><h3>Option-Implied Event Contracts: A Complete Framework for Derivatives on Prediction Markets</h3><div class="pmeta">Palash S. &middot; 42 pages &middot; 23 sections</div><p class="pdesc">Introduces OIECs &mdash; derivatives treating prediction market prices as bounded stochastic underlyings. Closed-form pricing, complete Greeks, market completeness, BVIX, bonding curves, and exchange infrastructure.</p><div class="topics"><span class="topic">Jacobi Process</span><span class="topic">Option Pricing</span><span class="topic">Completeness</span><span class="topic">BVIX</span><span class="topic">Bonding Curves</span></div><div class="click-hint">Click to explore &rarr;</div></div>
+      <div class="rc" data-project="paper-oiec"><span class="ptag">Working Paper &middot; Feb 2026</span><h3>Option-Implied Event Contracts: A Complete Framework for Derivatives on Prediction Markets</h3><div class="pmeta">Palash Shah, Carnegie Mellon &middot; 42 pages &middot; 23 sections</div><p class="pdesc">Introduces OIECs &mdash; derivatives treating prediction market prices as bounded stochastic underlyings. Closed-form pricing, complete Greeks, market completeness, BVIX, bonding curves, and exchange infrastructure.</p><div class="topics"><span class="topic">Jacobi Process</span><span class="topic">Option Pricing</span><span class="topic">Completeness</span><span class="topic">BVIX</span><span class="topic">Bonding Curves</span></div><div class="click-hint">Click to explore &rarr;</div></div>
       <div class="rc" data-project="paper-iv"><span class="ptag">Working Paper &middot; Feb 2026</span><h3>Emerging Paradigms in Quantitative Finance: LSTM, RL, and Regime Detection within Implied Volatility</h3><div class="pmeta">Palash Shah, Carnegie Mellon &middot; 23 pages</div><p class="pdesc">Unified framework where the IV surface defines state space, spectral clustering identifies regimes, LSTMs forecast evolution, and RL agents map forecasts into trading policies.</p><div class="topics"><span class="topic">Implied Volatility</span><span class="topic">Spectral Clustering</span><span class="topic">LSTM</span><span class="topic">RL</span><span class="topic">Regime Detection</span></div><div class="click-hint">Click to explore &rarr;</div></div>
     </div>
     <div style="margin-top:24px">
@@ -410,8 +415,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 
 <!-- FOOTER -->
 <footer id="contact">
-  <div class="fi rv"><h3>Let's Connect</h3><p>Interested in prediction market derivatives, quantitative research, or collaboration?</p>
-  <div class="fl"><a href="mailto:palash.shah08@gmail.com" class="flk flk-p">Email Me</a><a href="https://www.linkedin.com/in/palash-shah-me/" target="_blank" class="flk flk-g">LinkedIn</a></div>
+  <div class="fi rv"><h3>Let's Connect</h3><p>Interested in prediction market derivatives, quantitative research, or collaboration? I read everything.</p>
+  <div class="fl"><a href="mailto:palash.shah08@gmail.com" class="flk flk-p">Email Me</a><a href="https://www.linkedin.com/in/palash-shah-me/" target="_blank" class="flk flk-g">LinkedIn</a><a href="https://github.com/palash-shah" target="_blank" class="flk flk-g">GitHub</a></div>
   <div class="fcopy">&copy; 2026 Palash Shah &middot; Carnegie Mellon University</div></div>
 </footer>
 
@@ -666,7 +671,7 @@ hedge: {
 "paper-oiec": {
   title: "Option-Implied Event Contracts: A Complete Framework for Derivatives on Prediction Markets",
   tag: '<span class="tag tag-pp">Paper</span>',
-  status: "Published", statusClass: "sd-l",
+  status: "Working Paper", statusClass: "sd-l",
   paperLink: "paper-oiec.pdf",
   desc: `<p>This 42-page paper develops a comprehensive mathematical framework for pricing and hedging derivative contracts written on prediction market event futures. It spans 23 sections covering model setup, contract definitions, pricing formulas, Greeks, market completeness, numerical methods, calibration, product specification, margin methodology, market-making economics, and advanced extensions including BVIX, bonding curves, self-referential derivatives, and maximum entropy pricing.</p>
 <p><strong>Key contributions:</strong> Jacobi diffusion model for bounded probabilities, closed-form option pricing via Legendre polynomials, complete Greeks calculus with bounded domains, market completeness proof, belief variance swaps with model-free replication, confidence-weighted event digitals, and a full exchange infrastructure specification.</p>`,
@@ -683,7 +688,7 @@ hedge: {
 "paper-iv": {
   title: "Emerging Paradigms in Quantitative Finance: LSTM, RL, and Regime Detection within Implied Volatility",
   tag: '<span class="tag tag-pp">Paper</span>',
-  status: "Published", statusClass: "sd-l",
+  status: "Working Paper", statusClass: "sd-l",
   paperLink: "paper-iv.pdf",
   desc: `<p>This 23-page paper proposes a unified algorithmic framework where the implied-volatility surface defines the state space, spectral clustering identifies latent regimes, long short-term memory networks forecast the evolution of this manifold, and reinforcement learning agents map these forecasts into trading policies.</p>
 <p>The synthesis produces an end-to-end regime-aware volatility trading algorithm with backtesting protocol, baselines, and ablation studies. The paper covers stochastic volatility models (Heston, SABR), LSTM cell dynamics, Q-learning convergence, Hidden Markov Models, and technical indicators.</p>`,
@@ -1154,16 +1159,6 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOverlay();});
 document.addEventListener('click',e=>{
   const card=e.target.closest('[data-project]');
   if(card){openProject(card.dataset.project);}
-});
-
-// ===================== CURSOR =====================
-const dot=document.getElementById('cDot'),ring=document.getElementById('cRing');
-let mx=0,my=0,rx=0,ry=0;
-document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx-4+'px';dot.style.top=my-4+'px';});
-(function animR(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx-20+'px';ring.style.top=ry-20+'px';requestAnimationFrame(animR)})();
-document.querySelectorAll('a,.pc,.fc,.rc,.tc,.btn,.flk,.hero-tag,.ov-btn,.ov-close,.ov-back,.paper-dl').forEach(el=>{
-  el.addEventListener('mouseenter',()=>ring.classList.add('hover'));
-  el.addEventListener('mouseleave',()=>ring.classList.remove('hover'));
 });
 
 // ===================== NAV SCROLL =====================
