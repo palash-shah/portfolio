@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Palash Shah — Quantitative Finance & Prediction Markets</title>
-<meta name="description" content="Palash Shah is a quantitative researcher at Carnegie Mellon University. He develops derivatives frameworks for prediction markets — option pricing on bounded underlyings, belief volatility, market making, and margin methodology — alongside ML research on implied volatility.">
-<meta property="og:title" content="Palash Shah — Quantitative Finance & Prediction Markets">
+<title>Palash Shah · Quantitative Finance & Prediction Markets</title>
+<meta name="description" content="Palash Shah is a quantitative researcher at Carnegie Mellon University. He develops derivatives frameworks for prediction markets: option pricing on bounded underlyings, belief volatility, market making, and margin methodology. Alongside that, ML research on implied volatility.">
+<meta property="og:title" content="Palash Shah · Quantitative Finance & Prediction Markets">
 <meta property="og:description" content="Quantitative researcher at Carnegie Mellon. Derivatives frameworks for prediction markets: option pricing on bounded underlyings, belief volatility, market microstructure, and ML on implied volatility.">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary">
@@ -55,14 +55,14 @@ nav.scrolled{padding:14px 48px;background:rgba(3,3,4,.9)}
 .hero h1 .line{display:block}
 .hero h1 .gt{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
 .hero-sub{font-size:clamp(1rem,1.8vw,1.15rem);color:var(--t2);max-width:580px;margin:0 auto 44px;line-height:1.8;animation:fiu .8s ease .3s forwards;opacity:0}
-.hero-tags{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;animation:fiu .8s ease .45s forwards;opacity:0}
+.hero-tags{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;animation:fiu .8s ease .6s forwards;opacity:0}
 .hero-tag{padding:7px 16px;border-radius:20px;background:rgba(255,255,255,.025);border:1px solid var(--bdr);font-size:.76rem;color:var(--t3);font-weight:500;transition:all .3s;font-family:var(--fm);cursor:pointer}
 .hero-tag:hover{background:rgba(0,229,200,.06);border-color:rgba(0,229,200,.2);color:var(--cyan);transform:translateY(-2px)}
 .hero-scroll{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:10px;animation:fiu .8s ease .6s forwards,float 3s ease-in-out infinite 1.5s;opacity:0}
 .hero-scroll span{font-size:.65rem;text-transform:uppercase;letter-spacing:.2em;color:var(--t3);font-family:var(--fm)}
 .scroll-line{width:1px;height:50px;background:linear-gradient(to bottom,var(--cyan),transparent);opacity:.4}
 @keyframes float{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(10px)}}
-@media(max-height:820px){.hero-scroll{display:none}}
+@media(max-height:1020px){.hero-scroll{display:none}}
 @keyframes fiu{from{opacity:0;transform:translateY(35px)}to{opacity:1;transform:translateY(0)}}
 
 /* ABOUT */
@@ -245,12 +245,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 .paper-dl:hover{background:rgba(0,229,200,.12);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,229,200,.15)}
 .paper-dl svg{width:20px;height:20px;fill:currentColor}
 
-/* HERO SIM CANVAS */
-#heroSim{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:.85;mask-image:radial-gradient(ellipse 62% 55% at center,rgba(0,0,0,.28) 38%,#000 72%,rgba(0,0,0,.85) 100%);-webkit-mask-image:radial-gradient(ellipse 62% 55% at center,rgba(0,0,0,.28) 38%,#000 72%,rgba(0,0,0,.85) 100%)}
-.sim-badge{position:absolute;left:48px;bottom:36px;z-index:2;display:flex;align-items:center;gap:8px;font-family:var(--fm);font-size:.66rem;color:var(--t2);padding:7px 14px;border-radius:18px;background:rgba(3,3,4,.5);border:1px solid rgba(0,229,200,.18);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.sim-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:pulse 1.6s ease-in-out infinite;box-shadow:0 0 8px rgba(0,229,200,.7)}
-.sim-badge b{color:var(--cyan);font-weight:600}
-@media(max-width:768px){.sim-badge{left:24px;bottom:20px}}
+/* LIVE MARKET PANEL */
+.live-panel{max-width:700px;margin:0 auto 36px;border-radius:var(--r-lg);background:rgba(255,255,255,.02);border:1px solid var(--bdr);overflow:hidden;text-align:left;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);animation:fiu .8s ease .45s forwards;opacity:0;transition:border-color .5s,box-shadow .5s}
+.live-panel:hover{border-color:rgba(0,229,200,.22);box-shadow:0 12px 50px rgba(0,229,200,.05)}
+.lp-head{display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid var(--bdr);font-family:var(--fm);font-size:.64rem}
+.lp-live{display:flex;align-items:center;gap:6px;color:var(--cyan);font-weight:700;letter-spacing:.14em}
+.lp-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:pulse 1.6s ease-in-out infinite;box-shadow:0 0 8px rgba(0,229,200,.7)}
+.lp-title{color:var(--t3)}
+.lp-read{margin-left:auto;color:var(--t1);font-weight:600;font-variant-numeric:tabular-nums;transition:color .3s}
+.lp-read.up{color:var(--green)}.lp-read.dn{color:var(--pink)}
+#lpCanvas{display:block;width:100%;height:168px;cursor:crosshair;touch-action:manipulation}
+.lp-foot{display:flex;justify-content:space-between;gap:12px;padding:9px 18px;border-top:1px solid var(--bdr);font-family:var(--fm);font-size:.6rem;color:var(--t3)}
+@media(max-width:768px){#lpCanvas{height:130px}.lp-title{display:none}.lp-foot .lp-hint{display:none}.lp-foot{justify-content:center}}
 
 /* QUANT TERMINAL */
 .qterm{position:fixed;right:28px;bottom:28px;width:min(620px,calc(100vw - 32px));z-index:6000;background:rgba(8,8,16,.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(0,229,200,.25);border-radius:14px;box-shadow:0 24px 80px rgba(0,0,0,.6);overflow:hidden;transform:translateY(24px);opacity:0;pointer-events:none;transition:all .35s var(--ease);font-family:var(--fm)}
@@ -297,12 +303,19 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 <!-- HERO -->
 <section class="hero">
   <div class="hero-grid"></div>
-  <canvas id="heroSim" aria-hidden="true"></canvas>
-  <div class="sim-badge"><span class="dot"></span>live sim &mdash; <b>dP = &sigma;&radic;(P(1&minus;P))&thinsp;dW</b></div>
   <div class="hero-content">
     <div class="hero-badge"><span class="dot"></span>Building the derivatives layer for prediction markets</div>
     <h1><span class="line">Palash</span><span class="line gt">Shah</span></h1>
-    <p class="hero-sub">Quantitative researcher at Carnegie Mellon University. I develop the mathematics that lets prediction markets trade like real derivatives markets &mdash; option pricing on bounded underlyings, belief volatility, market making, and margin &mdash; and build the systems that run on it.</p>
+    <p class="hero-sub">Quantitative researcher at Carnegie Mellon University. I develop the mathematics that lets prediction markets trade like real derivatives markets: option pricing on bounded underlyings, belief volatility, market making, and margin. Then I build the systems that run on it.</p>
+    <div class="live-panel" id="livePanel">
+      <div class="lp-head">
+        <span class="lp-live"><span class="lp-dot"></span>LIVE</span>
+        <span class="lp-title">simulated event market &middot; dP = &sigma;&radic;(P(1&minus;P))&thinsp;dW</span>
+        <span class="lp-read" id="lpRead">P = 0.500</span>
+      </div>
+      <canvas id="lpCanvas"></canvas>
+      <div class="lp-foot"><span class="lp-hint">hover the chart to shock the market</span><span>click to resolve &middot; outcome ~ Bernoulli(P)</span></div>
+    </div>
     <div class="hero-tags">
       <span class="hero-tag">Terminal Pinning</span>
       <span class="hero-tag">Option-Implied Event Contracts</span>
@@ -329,8 +342,8 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
       <div class="about-text rv" style="transition-delay:.2s">
         <h3>I make markets that trade probabilities behave like markets you can actually hedge.</h3>
         <p>I'm <span class="hl">Palash Shah</span>, a student at <span class="hl">Carnegie Mellon University</span> working at the intersection of mathematical finance, machine learning, and market design.</p>
-        <p>My most recent paper, <span class="hl">Terminal Pinning in Prediction Markets</span>, models how event-contract prices collapse to {0,1} at resolution through information-driven Brownian bridges &mdash; with implied-volatility asymptotics validated on 50 resolved Polymarket markets totalling $6.4B in volume. It sits atop my broader <span class="hl">Option-Implied Event Contracts</span> framework: closed-form option pricing on bounded underlyings, a full Greeks calculus, variance swaps on beliefs, and the margin methodology an exchange would need to clear these products.</p>
-        <p>The theorems don't stay on paper: each framework here is paired with working systems &mdash; pricing engines, calibrators, market-making simulators, hedging engines. Alongside, I research implied volatility surfaces through spectral clustering, LSTM forecasting, and reinforcement learning.</p>
+        <p>My most recent paper, <span class="hl">Terminal Pinning in Prediction Markets</span>, models how event-contract prices collapse to {0,1} at resolution through information-driven Brownian bridges, with implied-volatility asymptotics validated on 50 resolved Polymarket markets totalling $6.4B in volume. It sits atop my broader <span class="hl">Option-Implied Event Contracts</span> framework: closed-form option pricing on bounded underlyings, a full Greeks calculus, variance swaps on beliefs, and the margin methodology an exchange would need to clear these products.</p>
+        <p>The theorems don't stay on paper. Each framework here is paired with working systems: pricing engines, calibrators, market-making simulators, hedging engines. Alongside, I research implied volatility surfaces through spectral clustering, LSTM forecasting, and reinforcement learning.</p>
         <div class="about-links">
           <a href="https://www.linkedin.com/in/palash-shah-me/" target="_blank" class="btn btn-p">LinkedIn &rarr;</a>
           <a href="https://github.com/palash-shah" target="_blank" class="btn btn-g">GitHub</a>
@@ -346,7 +359,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 <section class="cat-sec" id="derivatives">
   <div class="wm r" style="top:60px">DERIVATIVES</div>
   <div class="container">
-    <div class="cat-hdr rv"><div class="cat-num">01</div><div class="cat-info"><h2>Prediction Market Derivatives</h2><p>A complete options framework for event futures &mdash; enabling hedging, volatility trading, and institutional risk management.</p></div><span class="cat-count">6 projects</span></div>
+    <div class="cat-hdr rv"><div class="cat-num">01</div><div class="cat-info"><h2>Prediction Market Derivatives</h2><p>A complete options framework for event futures that enables hedging, volatility trading, and institutional risk management.</p></div><span class="cat-count">6 projects</span></div>
     <!-- Featured OIEC -->
     <div class="fc rv" data-project="oiec">
       <div class="fc-vis">
@@ -361,18 +374,18 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
       <div class="fc-content">
         <div class="pc-top"><span class="tag tag-fw">Framework</span><span class="st"><span class="sd sd-l"></span>Active</span></div>
         <h3 style="font-size:1.35rem">Option-Implied Event Contracts (OIEC)</h3>
-        <p class="desc">The flagship framework &mdash; a complete mathematical system for pricing and hedging derivative contracts on prediction market event futures. Uses the Jacobi diffusion to model bounded probability dynamics on [0,1], deriving closed-form pricing, put-call parity, a full Greeks calculus, and market completeness results.</p>
+        <p class="desc">The flagship framework: a complete mathematical system for pricing and hedging derivative contracts on prediction market event futures. Uses the Jacobi diffusion to model bounded probability dynamics on [0,1], deriving closed-form pricing, put-call parity, a full Greeks calculus, and market completeness results.</p>
         <div class="ts"><span class="chip">Jacobi Diffusion</span><span class="chip">Bounded SDEs</span><span class="chip">Risk-Neutral Pricing</span><span class="chip">Market Completeness</span><span class="chip">Greeks Calculus</span></div>
       </div>
       <div class="click-hint">Click to explore &rarr;</div>
     </div>
     <!-- Carousel -->
     <div class="carousel-wrap"><div class="carousel sg">
-      <div class="pc" style="--ca:var(--purple)" data-project="bvix"><div class="pc-top"><span class="tag tag-ix">Index</span><span class="st"><span class="sd sd-l"></span>Active</span></div><h3>Belief Volatility Index (BVIX)</h3><p class="desc">A model-free volatility index for prediction markets &mdash; the "VIX of beliefs." Measures market uncertainty about the probability itself via static replication through European probability options.</p><div class="ts"><span class="chip">Variance Swaps</span><span class="chip">Static Replication</span><span class="chip">Carr-Madan</span></div><div class="click-hint">Click to explore &rarr;</div></div>
+      <div class="pc" style="--ca:var(--purple)" data-project="bvix"><div class="pc-top"><span class="tag tag-ix">Index</span><span class="st"><span class="sd sd-l"></span>Active</span></div><h3>Belief Volatility Index (BVIX)</h3><p class="desc">A model-free volatility index for prediction markets, the "VIX of beliefs." Measures market uncertainty about the probability itself via static replication through European probability options.</p><div class="ts"><span class="chip">Variance Swaps</span><span class="chip">Static Replication</span><span class="chip">Carr-Madan</span></div><div class="click-hint">Click to explore &rarr;</div></div>
       <div class="pc" style="--ca:var(--green)" data-project="bonding"><div class="pc-top"><span class="tag tag-pr">Protocol</span><span class="st"><span class="sd sd-d"></span>Dev</span></div><h3>Jacobi Bonding Curves</h3><p class="desc">Continuous-time automated market making using Jacobi-process-derived bonding curves. State-dependent liquidity respecting [0,1] probability bounds.</p><div class="ts"><span class="chip">AMM Design</span><span class="chip">Bonding Curves</span><span class="chip">DeFi</span></div><div class="click-hint">Click to explore &rarr;</div></div>
       <div class="pc" style="--ca:var(--blue)" data-project="gmm"><div class="pc-top"><span class="tag tag-sy">System</span><span class="st"><span class="sd sd-d"></span>Dev</span></div><h3>Greeks-Bounded Market Maker</h3><p class="desc">Market-making protocol with deterministic loss bounds derived from the Greeks. Provable maximum loss guarantees with competitive spreads.</p><div class="ts"><span class="chip">Market Making</span><span class="chip">Delta Hedging</span><span class="chip">Loss Bounds</span></div><div class="click-hint">Click to explore &rarr;</div></div>
       <div class="pc" style="--ca:var(--orange)" data-project="cwd"><div class="pc-top"><span class="tag tag-in">Instrument</span><span class="st"><span class="sd sd-l"></span>Active</span></div><h3>Confidence-Weighted Event Digitals</h3><p class="desc">Novel derivatives linking terminal event outcomes with pre-resolution market confidence. Express views on market calibration quality.</p><div class="ts"><span class="chip">Digital Options</span><span class="chip">Calibration Bets</span><span class="chip">Tail Events</span></div><div class="click-hint">Click to explore &rarr;</div></div>
-      <div class="pc" style="--ca:var(--pink)" data-project="srp"><div class="pc-top"><span class="tag tag-rs">Research</span><span class="st"><span class="sd sd-r"></span>Research</span></div><h3>Self-Referential Prediction Derivatives</h3><p class="desc">Derivatives whose payoff depends on the implied volatility of the event contract itself &mdash; creating recursive pricing structures.</p><div class="ts"><span class="chip">IV Options</span><span class="chip">Fixed-Point</span><span class="chip">Recursive Finance</span></div><div class="click-hint">Click to explore &rarr;</div></div>
+      <div class="pc" style="--ca:var(--pink)" data-project="srp"><div class="pc-top"><span class="tag tag-rs">Research</span><span class="st"><span class="sd sd-r"></span>Research</span></div><h3>Self-Referential Prediction Derivatives</h3><p class="desc">Derivatives whose payoff depends on the implied volatility of the event contract itself, creating recursive pricing structures.</p><div class="ts"><span class="chip">IV Options</span><span class="chip">Fixed-Point</span><span class="chip">Recursive Finance</span></div><div class="click-hint">Click to explore &rarr;</div></div>
     </div></div>
   </div>
 </section>
@@ -419,7 +432,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
       <div class="rc" data-project="paper-iv"><span class="ptag">Working Paper &middot; Feb 2026</span><h3>Emerging Paradigms in Quantitative Finance: LSTM, RL, and Regime Detection within Implied Volatility</h3><div class="pmeta">Palash Shah, Carnegie Mellon &middot; 23 pages</div><p class="pdesc">Unified framework where the IV surface defines state space, spectral clustering identifies regimes, LSTMs forecast evolution, and RL agents map forecasts into trading policies.</p><div class="topics"><span class="topic">Implied Volatility</span><span class="topic">Spectral Clustering</span><span class="topic">LSTM</span><span class="topic">RL</span><span class="topic">Regime Detection</span></div><div class="click-hint">Click to explore &rarr;</div></div>
     </div>
     <div style="margin-top:24px">
-      <div class="pc rv" style="--ca:var(--cyan)" data-project="margin"><div class="pc-top"><span class="tag tag-fw">Research</span><span class="st"><span class="sd sd-l"></span>Active</span></div><h3>Margin Methodology for Event Derivatives</h3><p class="desc">Complete margin framework for exchange-clearing. Maximum loss bounds, initial margin via scan range calibration, portfolio margining, and variation margin procedures &mdash; essential for institutional adoption.</p><div class="ts"><span class="chip">Initial Margin</span><span class="chip">Scan Range</span><span class="chip">Portfolio Margin</span><span class="chip">Exchange Clearing</span></div><div class="click-hint">Click to explore &rarr;</div></div>
+      <div class="pc rv" style="--ca:var(--cyan)" data-project="margin"><div class="pc-top"><span class="tag tag-fw">Research</span><span class="st"><span class="sd sd-l"></span>Active</span></div><h3>Margin Methodology for Event Derivatives</h3><p class="desc">Complete margin framework for exchange-clearing. Maximum loss bounds, initial margin via scan range calibration, portfolio margining, and variation margin procedures. Essential infrastructure for institutional adoption.</p><div class="ts"><span class="chip">Initial Margin</span><span class="chip">Scan Range</span><span class="chip">Portfolio Margin</span><span class="chip">Exchange Clearing</span></div><div class="click-hint">Click to explore &rarr;</div></div>
     </div>
   </div>
 </section>
@@ -452,7 +465,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 
 <!-- QUANT TERMINAL -->
 <div class="qterm" id="qterm" role="dialog" aria-label="Quant terminal">
-  <div class="qterm-bar"><span class="qterm-dot qd-r"></span><span class="qterm-dot qd-y"></span><span class="qterm-dot qd-g"></span><span class="qterm-title">palash@quant &mdash; zsh</span><button class="qterm-x" id="qtermClose">&times;</button></div>
+  <div class="qterm-bar"><span class="qterm-dot qd-r"></span><span class="qterm-dot qd-y"></span><span class="qterm-dot qd-g"></span><span class="qterm-title">palash@quant · zsh</span><button class="qterm-x" id="qtermClose">&times;</button></div>
   <div class="qterm-out" id="qtermOut"></div>
   <div class="qterm-line"><span class="qterm-ps1">&#10142;</span><input id="qtermIn" autocomplete="off" spellcheck="false" placeholder="type `help`"></div>
 </div>
@@ -491,7 +504,7 @@ bvix: {
   title: "Belief Volatility Index (BVIX)",
   tag: '<span class="tag tag-ix">Index</span>',
   status: "Active", statusClass: "sd-l",
-  desc: `<p>The BVIX is a model-free volatility index for prediction markets — analogous to the CBOE VIX for equity markets. It measures how uncertain the market is about the probability itself, providing a single scalar that captures the expected future volatility of market beliefs.</p>
+  desc: `<p>The BVIX is a model-free volatility index for prediction markets, analogous to the CBOE VIX for equity markets. It measures how uncertain the market is about the probability itself, providing a single scalar that captures the expected future volatility of market beliefs.</p>
 <p>Constructed via static replication through a strip of European probability options using the bounded log payoff \\(L(P) = -\\log P - \\log(1-P)\\), the BVIX enables variance swap trading and volatility speculation on event futures without requiring a specific model for probability dynamics.</p>`,
   math: [
     {label:"Realized Belief Variance", tex:"\\text{RV}_{t_0,\\tau}^{(P)} := \\sum_{j=0}^{m-1}(P_{s_{j+1}} - P_{s_j})^2"},
@@ -507,7 +520,7 @@ bonding: {
   title: "Jacobi Bonding Curves",
   tag: '<span class="tag tag-pr">Protocol</span>',
   status: "Development", statusClass: "sd-d",
-  desc: `<p>This project develops continuous-time automated market making for prediction markets using bonding curves derived from the Jacobi process. The bonding curve shape is determined by the Beta distribution — the stationary density of the Jacobi diffusion — providing state-dependent liquidity that naturally respects probability bounds.</p>
+  desc: `<p>This project develops continuous-time automated market making for prediction markets using bonding curves derived from the Jacobi process. The bonding curve shape is determined by the Beta distribution (the stationary density of the Jacobi diffusion), providing state-dependent liquidity that naturally respects probability bounds.</p>
 <p>Unlike constant-product AMMs (e.g., Uniswap), the Jacobi bonding curve concentrates liquidity where it matters most: near the current probability estimate, with liquidity naturally thinning near the boundaries 0 and 1.</p>`,
   math: [
     {label:"Bonding Curve", tex:"\\phi(P) = \\frac{P^{\\alpha-1}(1-P)^{\\beta-1}}{B(\\alpha,\\beta)}"},
@@ -711,8 +724,8 @@ hedge: {
   status: "Working Paper", statusClass: "sd-l",
   paperLink: "paper-pinning.pdf",
   desc: `<p>Prediction-market event futures converge to binary outcomes {0,1} at a known terminal time. Existing models impose this "pinning" as a boundary condition; this paper makes it emerge endogenously. Conditional on the unobserved outcome, the price follows a Brownian-bridge process; unconditionally it is a martingale mixture of two such bridges weighted by the posterior probability of the event.</p>
-<p><strong>Key contributions:</strong> endogenous pinning at a power-law rate, sharp leading-order implied-volatility asymptotics near resolution with a closed-form constant \\(\\Sigma^*(p,K)\\), and a completeness theorem &mdash; the event future and money market alone are incomplete because the diffusion coefficient vanishes in the terminal regime, and adding a single traded European option restores completeness.</p>
-<p><strong>Empirics:</strong> all three central predictions are verified on a panel of 50 resolved Polymarket binary markets &mdash; $6.4B of cumulative trading volume, January 2024 to April 2026, spanning 19 topical categories. The full data-collection and analysis pipeline is released with the paper.</p>`,
+<p><strong>Key contributions:</strong> endogenous pinning at a power-law rate, sharp leading-order implied-volatility asymptotics near resolution with a closed-form constant \\(\\Sigma^*(p,K)\\), and a completeness theorem: the event future and money market alone are incomplete because the diffusion coefficient vanishes in the terminal regime, and adding a single traded European option restores completeness.</p>
+<p><strong>Empirics:</strong> all three central predictions are verified on a panel of 50 resolved Polymarket binary markets covering $6.4B of cumulative trading volume, January 2024 to April 2026, across 19 topical categories. The full data-collection and analysis pipeline is released with the paper.</p>`,
   math: [
     {label:"Event Future Price", tex:"P_t = \\mathbb{Q}(E \\mid \\mathcal{F}_t)"},
     {label:"Conditional Logit Bridge", tex:"L_\\tau \\mid \\{P_t\\!=\\!p,\\,X_T\\!=\\!x\\} \\sim \\mathcal{N}\\!\\big(\\mathrm{logit}(p) + (2x\\!-\\!1)\\beta_0^2 L,\\; \\beta_0^2 L\\big),\\quad L=\\log\\tfrac{T-t}{T-\\tau}"},
@@ -1235,50 +1248,118 @@ window.addEventListener('scroll',()=>{wms.forEach(w=>{const r=w.parentElement.ge
 const hc=document.querySelector('.hero-content');
 document.querySelector('.hero').addEventListener('mousemove',e=>{const x=(e.clientX/window.innerWidth-.5)*12;const y=(e.clientY/window.innerHeight-.5)*12;hc.style.transform=`translate(${x}px,${y}px)`;});
 
-// ===================== HERO DIFFUSION SIM =====================
-// Live Jacobi paths: dP = 0.05·√(P(1−P))·dW, oscilloscope-style scroll
+// ===================== LIVE MARKET PANEL =====================
+// One smooth event-market path. Hover = volatility shock pulling toward the
+// cursor's implied probability. Click = resolution: outcome ~ Bernoulli(P),
+// then the price pins to {0,1} (see the Terminal Pinning paper).
 (function(){
-  const cv=document.getElementById('heroSim');if(!cv)return;
+  const cv=document.getElementById('lpCanvas'),read=document.getElementById('lpRead');
+  if(!cv)return;
   const ctx=cv.getContext('2d');
-  const colors=['#00e5c8','#2997ff','#bf5af2','#30d158','#ff9f0a'];
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  let W,H,paths;
-  const step=v=>{v+=0.09*Math.sqrt(Math.max(0.0005,v*(1-v)))*(Math.random()*2-1);return Math.max(0.02,Math.min(0.98,v));};
-  function reset(){
-    W=cv.width=cv.offsetWidth;H=cv.height=cv.offsetHeight;
-    if(!W){setTimeout(reset,300);return;}
-    const n=Math.max(120,Math.floor(W/4));
-    paths=colors.map((c,i)=>{
-      let v=0.2+0.15*i;const buf=[];
-      for(let j=0;j<n;j++){v=step(v);buf.push(v);}
-      return {c,buf,n};
-    });
+  const DPR=Math.min(2,window.devicePixelRatio||1);
+  const SAMPLE=1/40;
+  let W=0,H=0,N=0,buf=[],markers=[],v=0.5;
+  let phase='live',outcome=null,holdUntil=0;
+  let mouseX=-1,mouseY=-1,inside=false;
+  const gauss=()=>((Math.random()+Math.random()+Math.random())-1.5)*2;
+  const y2px=y=>H*(0.10+0.80*(1-y));
+  function stepLive(dt){
+    let vol=0.25,drift=0;
+    if(inside){
+      const t=Math.max(0.03,Math.min(0.97,1-((mouseY/H)-0.10)/0.80));
+      vol=0.6;drift=(t-v)*1.6;
+    }
+    v+=drift*dt+vol*Math.sqrt(Math.max(.0008,v*(1-v)))*Math.sqrt(dt)*gauss();
+    v=Math.max(.02,Math.min(.98,v));
+  }
+  function stepPin(dt){
+    const tgt=outcome?0.985:0.015;
+    v+=(tgt-v)*Math.min(1,5*dt)+0.10*Math.sqrt(Math.max(.0003,v*(1-v)))*Math.sqrt(dt)*gauss();
+    if(Math.abs(v-tgt)<0.008){
+      phase='resolved';holdUntil=performance.now()+1500;
+      read.textContent='RESOLVED → '+(outcome?1:0);
+      read.className='lp-read '+(outcome?'up':'dn');
+    }
+  }
+  function size(){
+    const w=cv.offsetWidth,h=cv.offsetHeight;
+    if(!w){setTimeout(size,300);return;}
+    W=w;H=h;cv.width=w*DPR;cv.height=h*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);
+    N=Math.max(140,Math.floor(w/3));
+    if(!buf.length){for(let i=0;i<N;i++){stepLive(SAMPLE);buf.push(v);}}
+    else if(buf.length>N){buf=buf.slice(-N);}
+    else while(buf.length<N)buf.unshift(buf[0]);
     render();
+  }
+  function tracePath(pts){
+    ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);
+    for(let i=1;i<pts.length-1;i++){
+      const xc=(pts[i][0]+pts[i+1][0])/2,yc=(pts[i][1]+pts[i+1][1])/2;
+      ctx.quadraticCurveTo(pts[i][0],pts[i][1],xc,yc);
+    }
+    ctx.lineTo(pts[pts.length-1][0],pts[pts.length-1][1]);
   }
   function render(){
     ctx.clearRect(0,0,W,H);
-    ctx.lineWidth=1.8;ctx.globalAlpha=.8;
-    paths.forEach(p=>{
-      ctx.beginPath();ctx.strokeStyle=p.c;
-      ctx.shadowColor=p.c;ctx.shadowBlur=6;
-      p.buf.forEach((y,j)=>{const px=j*(W/p.n),py=H*(0.15+0.7*(1-y));j?ctx.lineTo(px,py):ctx.moveTo(px,py);});
-      ctx.stroke();
-      // glowing ticker head at the newest point
-      const hy=H*(0.15+0.7*(1-p.buf[p.buf.length-1]));
-      ctx.beginPath();ctx.fillStyle=p.c;ctx.shadowBlur=14;
-      ctx.arc((p.buf.length-1)*(W/p.n),hy,3,0,Math.PI*2);ctx.fill();
+    // gridline at P=0.5 + axis labels
+    ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;ctx.setLineDash([3,7]);
+    ctx.beginPath();ctx.moveTo(0,y2px(0.5));ctx.lineTo(W,y2px(0.5));ctx.stroke();ctx.setLineDash([]);
+    ctx.fillStyle='rgba(255,255,255,.2)';ctx.font='9px JetBrains Mono, monospace';
+    ctx.fillText('1.0',8,y2px(1)+11);ctx.fillText('0.5',8,y2px(0.5)-5);ctx.fillText('0.0',8,y2px(0)-5);
+    // resolution markers
+    markers.forEach(m=>{
+      const x=m*(W/(N-1));
+      ctx.strokeStyle='rgba(255,255,255,.08)';ctx.setLineDash([2,5]);
+      ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();ctx.setLineDash([]);
     });
-    ctx.shadowBlur=0;ctx.globalAlpha=1;
-  }
-  function tick(){
-    if(document.visibilityState==='visible'){
-      paths.forEach(p=>{for(let s=0;s<2;s++){p.buf.push(step(p.buf[p.buf.length-1]));if(p.buf.length>p.n)p.buf.shift();}});
-      render();
+    // cursor guide
+    if(inside&&phase==='live'){
+      ctx.strokeStyle='rgba(0,229,200,.12)';ctx.beginPath();ctx.moveTo(mouseX,0);ctx.lineTo(mouseX,H);ctx.stroke();
     }
-    requestAnimationFrame(tick);
+    const pts=buf.map((y,i)=>[i*(W/(N-1)),y2px(y)]);
+    const last=pts[pts.length-1];
+    // soft area fill under the curve
+    tracePath(pts);
+    ctx.lineTo(last[0],H);ctx.lineTo(0,H);ctx.closePath();
+    const fg=ctx.createLinearGradient(0,0,0,H);
+    fg.addColorStop(0,'rgba(41,151,255,.14)');fg.addColorStop(1,'rgba(41,151,255,0)');
+    ctx.fillStyle=fg;ctx.fill();
+    // gradient stroke
+    const grad=ctx.createLinearGradient(0,0,W,0);
+    grad.addColorStop(0,'#00e5c8');grad.addColorStop(.55,'#2997ff');grad.addColorStop(1,'#bf5af2');
+    tracePath(pts);
+    ctx.strokeStyle=grad;ctx.lineWidth=2;ctx.lineJoin='round';ctx.lineCap='round';
+    ctx.shadowColor='rgba(41,151,255,.8)';ctx.shadowBlur=8;ctx.stroke();ctx.shadowBlur=0;
+    // glowing head
+    const headC=phase==='live'?'#00e5c8':(outcome?'#30d158':'#ff375f');
+    ctx.beginPath();ctx.fillStyle=headC;ctx.shadowColor=headC;ctx.shadowBlur=12;
+    ctx.arc(last[0],last[1],3.5,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
   }
-  reset();addEventListener('resize',reset);
-  if(!reduced)requestAnimationFrame(tick);
+  function frame(now){
+    if(document.visibilityState!=='visible')return;
+    const dt=Math.min(0.1,(now-lastT)/1000);lastT=now;acc+=dt;
+    while(acc>=SAMPLE){
+      if(phase==='live')stepLive(SAMPLE);
+      else if(phase==='pinning')stepPin(SAMPLE);
+      else if(now>=holdUntil){phase='live';v=0.5;markers.push(N-1);read.className='lp-read';}
+      buf.push(v);
+      if(buf.length>N){buf.shift();markers=markers.map(m=>m-1).filter(m=>m>=0);}
+      acc-=SAMPLE;
+    }
+    if(phase!=='resolved')read.textContent='P = '+v.toFixed(3);
+    render();
+  }
+  let lastT=performance.now(),acc=0,rafOk=false;
+  function loop(now){rafOk=true;frame(now);requestAnimationFrame(loop);}
+  cv.addEventListener('mousemove',e=>{const r=cv.getBoundingClientRect();mouseX=e.clientX-r.left;mouseY=e.clientY-r.top;inside=true;});
+  cv.addEventListener('mouseleave',()=>{inside=false;});
+  cv.addEventListener('click',()=>{if(phase==='live'){outcome=Math.random()<v?1:0;phase='pinning';}});
+  size();addEventListener('resize',size);
+  if(!reduced){
+    requestAnimationFrame(loop);
+    setTimeout(()=>{if(!rafOk)setInterval(()=>frame(performance.now()),33);},400);
+  }
 })();
 
 // ===================== QUANT TERMINAL =====================
@@ -1289,19 +1370,19 @@ function qEsc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;
 function qToggle(open){
   const o=open===undefined?!qterm.classList.contains('open'):open;
   qterm.classList.toggle('open',o);
-  if(o){qIn.focus();if(!qOut.childElementCount)qPrint('quant terminal v1.0 &mdash; type <b>help</b>','qdim');}
+  if(o){qIn.focus();if(!qOut.childElementCount)qPrint('quant terminal v1.0 · type <b>help</b>','qdim');}
   else qIn.blur();
 }
 const qSpark=v=>'▁▂▃▄▅▆▇█'[Math.max(0,Math.min(7,Math.floor(v*8)))];
 const QCMDS={
   help:()=>qPrint('commands: <b>papers</b> &middot; <b>projects</b> &middot; <b>open</b> &lt;id&gt; &middot; <b>sim</b> [&sigma;] &middot; <b>pin</b> &lt;p&gt; &lt;K&gt; &middot; <b>bvix</b> &lt;p&gt; &lt;&sigma;&gt; &middot; <b>whoami</b> &middot; <b>github</b> &middot; <b>contact</b> &middot; <b>clear</b>'),
-  papers:()=>{qPrint('[1] Terminal Pinning in Prediction Markets (2026) &mdash; <a href="paper-pinning.pdf" target="_blank">pdf</a>');qPrint('[2] Emerging Paradigms in Quantitative Finance (2026) &mdash; <a href="paper-iv.pdf" target="_blank">pdf</a>');},
-  projects:()=>qPrint('ids: '+Object.keys(P).join(', ')+' &mdash; try <b>open</b> &lt;id&gt;'),
-  open:a=>{if(P[a[0]]){qToggle(false);openProject(a[0]);}else qPrint('unknown id: '+qEsc(a[0]||'')+' &mdash; try <b>projects</b>','qerr');},
+  papers:()=>{qPrint('[1] Terminal Pinning in Prediction Markets (2026) · <a href="paper-pinning.pdf" target="_blank">pdf</a>');qPrint('[2] Emerging Paradigms in Quantitative Finance (2026) · <a href="paper-iv.pdf" target="_blank">pdf</a>');},
+  projects:()=>qPrint('ids: '+Object.keys(P).join(', ')+', try <b>open</b> &lt;id&gt;'),
+  open:a=>{if(P[a[0]]){qToggle(false);openProject(a[0]);}else qPrint('unknown id: '+qEsc(a[0]||'')+', try <b>projects</b>','qerr');},
   sim:a=>{const s=Math.min(0.8,Math.max(0.05,parseFloat(a[0])||0.35));let v=0.5,out='';for(let i=0;i<44;i++){v+=s*Math.sqrt(Math.max(.001,v*(1-v)))*(Math.random()-.5);v=Math.max(.02,Math.min(.98,v));out+=qSpark(v);}qPrint('<span class="qpath">'+out+'</span> <span class="qdim">dP = '+s.toFixed(2)+'&middot;&radic;(P(1&minus;P))&middot;dW</span>');},
-  pin:a=>{const p=parseFloat(a[0]),K=parseFloat(a[1]);if(!(p>0&&p<1&&K>0&&K<1))return qPrint('usage: pin &lt;p&gt; &lt;K&gt; in (0,1) &mdash; e.g. pin 0.6 0.5','qerr');qPrint('lim<sub>&tau;&rarr;T&#8315;</sub> c(p='+p+', K='+K+') = p&middot;(1&minus;K) = <b>'+(p*(1-K)).toFixed(4)+'</b> <span class="qdim">// Terminal Pinning paper, eq. (24)</span>');},
-  bvix:a=>{const p=parseFloat(a[0]),s=parseFloat(a[1]);if(!(p>0&&p<1)||isNaN(s))return qPrint('usage: bvix &lt;p&gt; &lt;&sigma;&gt; &mdash; e.g. bvix 0.6 0.3','qerr');qPrint('fair variance strike = &sigma;&sup2;&middot;p&middot;(1&minus;p) = <b>'+(s*s*p*(1-p)).toFixed(4)+'</b>');},
-  whoami:()=>qPrint('palash &mdash; quant researcher, CMU. builds derivatives math for markets that trade probabilities.'),
+  pin:a=>{const p=parseFloat(a[0]),K=parseFloat(a[1]);if(!(p>0&&p<1&&K>0&&K<1))return qPrint('usage: pin &lt;p&gt; &lt;K&gt; in (0,1), e.g. pin 0.6 0.5','qerr');qPrint('lim<sub>&tau;&rarr;T&#8315;</sub> c(p='+p+', K='+K+') = p&middot;(1&minus;K) = <b>'+(p*(1-K)).toFixed(4)+'</b> <span class="qdim">// Terminal Pinning paper, eq. (24)</span>');},
+  bvix:a=>{const p=parseFloat(a[0]),s=parseFloat(a[1]);if(!(p>0&&p<1)||isNaN(s))return qPrint('usage: bvix &lt;p&gt; &lt;&sigma;&gt;, e.g. bvix 0.6 0.3','qerr');qPrint('fair variance strike = &sigma;&sup2;&middot;p&middot;(1&minus;p) = <b>'+(s*s*p*(1-p)).toFixed(4)+'</b>');},
+  whoami:()=>qPrint('palash: quant researcher at CMU. builds derivatives math for markets that trade probabilities.'),
   github:()=>{window.open('https://github.com/palash-shah','_blank');qPrint('opening github&hellip;','qdim');},
   linkedin:()=>{window.open('https://www.linkedin.com/in/palash-shah-me/','_blank');qPrint('opening linkedin&hellip;','qdim');},
   contact:()=>qPrint('<a href="mailto:palash.shah08@gmail.com">palash.shah08@gmail.com</a>'),
@@ -1313,7 +1394,7 @@ function qRun(line){
   const parts=line.trim().split(/\s+/),cmd=parts[0],args=parts.slice(1);
   if(!cmd)return;
   if(QCMDS[cmd])QCMDS[cmd](args);
-  else qPrint('zsh: command not found: '+qEsc(cmd)+' &mdash; try <b>help</b>','qerr');
+  else qPrint('zsh: command not found: '+qEsc(cmd)+', try <b>help</b>','qerr');
 }
 qIn.addEventListener('keydown',e=>{
   if(e.key==='Enter'){const v=qIn.value;if(v.trim()){qHist.push(v);}qHi=qHist.length;qIn.value='';qRun(v);}
