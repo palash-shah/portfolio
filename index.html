@@ -45,7 +45,7 @@ nav.scrolled{padding:14px 48px;background:rgba(3,3,4,.9)}
 .wm.l{left:-40px}.wm.r{right:-40px;text-align:right}.wm.c{left:50%;transform:translateX(-50%)}
 
 /* HERO */
-.hero{min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding-top:80px;position:relative;overflow:hidden}
+.hero{height:100vh;height:100svh;min-height:520px;position:relative;overflow:hidden}
 .hero-grid{position:absolute;inset:0;background-image:radial-gradient(circle,rgba(255,255,255,.04) 1px,transparent 1px);background-size:40px 40px;mask-image:radial-gradient(ellipse at center,#000 20%,transparent 70%);-webkit-mask-image:radial-gradient(ellipse at center,#000 20%,transparent 70%)}
 .hero-content{max-width:900px;position:relative;z-index:2}
 .hero-badge{display:inline-flex;align-items:center;gap:10px;padding:7px 18px;border-radius:24px;background:rgba(0,229,200,.06);border:1px solid rgba(0,229,200,.15);font-size:.72rem;font-weight:600;color:var(--cyan);letter-spacing:.08em;text-transform:uppercase;margin-bottom:32px;font-family:var(--fm);animation:fiu .8s ease forwards;opacity:0}
@@ -62,7 +62,7 @@ nav.scrolled{padding:14px 48px;background:rgba(3,3,4,.9)}
 .hero-scroll span{font-size:.65rem;text-transform:uppercase;letter-spacing:.2em;color:var(--t3);font-family:var(--fm)}
 .scroll-line{width:1px;height:50px;background:linear-gradient(to bottom,var(--cyan),transparent);opacity:.4}
 @keyframes float{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(10px)}}
-@media(max-height:1020px){.hero-scroll{display:none}}
+.hero-scroll{pointer-events:none;z-index:2}
 @keyframes fiu{from{opacity:0;transform:translateY(35px)}to{opacity:1;transform:translateY(0)}}
 
 /* ABOUT */
@@ -245,18 +245,13 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 .paper-dl:hover{background:rgba(0,229,200,.12);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,229,200,.15)}
 .paper-dl svg{width:20px;height:20px;fill:currentColor}
 
-/* LIVE MARKET PANEL */
-.live-panel{max-width:700px;margin:0 auto 36px;border-radius:var(--r-lg);background:rgba(255,255,255,.02);border:1px solid var(--bdr);overflow:hidden;text-align:left;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);animation:fiu .8s ease .45s forwards;opacity:0;transition:border-color .5s,box-shadow .5s}
-.live-panel:hover{border-color:rgba(0,229,200,.22);box-shadow:0 12px 50px rgba(0,229,200,.05)}
-.lp-head{display:flex;align-items:center;gap:14px;padding:12px 18px;border-bottom:1px solid var(--bdr);font-family:var(--fm);font-size:.64rem}
-.lp-live{display:flex;align-items:center;gap:6px;color:var(--cyan);font-weight:700;letter-spacing:.14em}
-.lp-dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:pulse 1.6s ease-in-out infinite;box-shadow:0 0 8px rgba(0,229,200,.7)}
-.lp-title{color:var(--t3)}
-.lp-read{margin-left:auto;color:var(--t1);font-weight:600;font-variant-numeric:tabular-nums;transition:color .3s}
-.lp-read.up{color:var(--green)}.lp-read.dn{color:var(--pink)}
-#lpCanvas{display:block;width:100%;height:168px;cursor:crosshair;touch-action:manipulation}
-.lp-foot{display:flex;justify-content:space-between;gap:12px;padding:9px 18px;border-top:1px solid var(--bdr);font-family:var(--fm);font-size:.6rem;color:var(--t3)}
-@media(max-width:768px){#lpCanvas{height:130px}.lp-title{display:none}.lp-foot .lp-hint{display:none}.lp-foot{justify-content:center}}
+/* FULL-SCREEN LIVE MARKET HERO */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+#mktCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;cursor:crosshair}
+.mkt-live{position:absolute;top:104px;left:48px;z-index:2;display:flex;align-items:center;gap:8px;font-family:var(--fm);font-size:.68rem;font-weight:700;letter-spacing:.16em;color:var(--cyan);animation:fiu .8s ease .2s forwards;opacity:0;pointer-events:none}
+.mkt-dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);animation:pulse 1.6s ease-in-out infinite;box-shadow:0 0 10px rgba(0,229,200,.8)}
+.mkt-sde{position:absolute;bottom:34px;right:48px;z-index:2;font-family:var(--fm);font-size:.72rem;color:var(--t3);animation:fiu .8s ease .35s forwards;opacity:0;pointer-events:none}
+@media(max-width:768px){.mkt-live{left:24px;top:92px}.mkt-sde{right:24px;bottom:26px;font-size:.62rem}}
 
 /* QUANT TERMINAL */
 .qterm{position:fixed;right:28px;bottom:28px;width:min(620px,calc(100vw - 32px));z-index:6000;background:rgba(8,8,16,.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(0,229,200,.25);border-radius:14px;box-shadow:0 24px 80px rgba(0,0,0,.6);overflow:hidden;transform:translateY(24px);opacity:0;pointer-events:none;transition:all .35s var(--ease);font-family:var(--fm)}
@@ -303,29 +298,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 <!-- HERO -->
 <section class="hero">
   <div class="hero-grid"></div>
-  <div class="hero-content">
-    <div class="hero-badge"><span class="dot"></span>Building the derivatives layer for prediction markets</div>
-    <h1><span class="line">Palash</span><span class="line gt">Shah</span></h1>
-    <p class="hero-sub">Quantitative researcher at Carnegie Mellon University. I develop the mathematics that lets prediction markets trade like real derivatives markets: option pricing on bounded underlyings, belief volatility, market making, and margin. Then I build the systems that run on it.</p>
-    <div class="live-panel" id="livePanel">
-      <div class="lp-head">
-        <span class="lp-live"><span class="lp-dot"></span>LIVE</span>
-        <span class="lp-title">simulated event market &middot; dP = &sigma;&radic;(P(1&minus;P))&thinsp;dW</span>
-        <span class="lp-read" id="lpRead">P = 0.500</span>
-      </div>
-      <canvas id="lpCanvas"></canvas>
-      <div class="lp-foot"><span class="lp-hint">hover the chart to shock the market</span><span>click to resolve &middot; outcome ~ Bernoulli(P)</span></div>
-    </div>
-    <div class="hero-tags">
-      <span class="hero-tag">Terminal Pinning</span>
-      <span class="hero-tag">Option-Implied Event Contracts</span>
-      <span class="hero-tag">Jacobi Diffusion</span>
-      <span class="hero-tag">Belief Volatility</span>
-      <span class="hero-tag">Spectral Clustering</span>
-      <span class="hero-tag">Reinforcement Learning</span>
-    </div>
-  </div>
-  <div class="hero-scroll"><span>Scroll</span><div class="scroll-line"></div></div>
+  <canvas id="mktCanvas" aria-hidden="true"></canvas>
+  <h1 class="sr-only">Palash Shah. Quantitative researcher at Carnegie Mellon University working on prediction market derivatives.</h1>
+  <div class="mkt-live"><span class="mkt-dot"></span>LIVE</div>
+  <div class="mkt-sde">dP = &sigma;&radic;(P(1&minus;P))&thinsp;dW</div>
+  <div class="hero-scroll"><div class="scroll-line"></div></div>
 </section>
 
 <!-- ABOUT -->
@@ -1244,30 +1221,29 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{a.addEventListener('click'
 const wms=document.querySelectorAll('.wm');
 window.addEventListener('scroll',()=>{wms.forEach(w=>{const r=w.parentElement.getBoundingClientRect();const o=r.top*.08;w.style.transform=w.classList.contains('c')?`translateX(-50%) translateY(${o}px)`:`translateY(${o}px)`;})});
 
-// ===================== HERO PARALLAX =====================
-const hc=document.querySelector('.hero-content');
-document.querySelector('.hero').addEventListener('mousemove',e=>{const x=(e.clientX/window.innerWidth-.5)*12;const y=(e.clientY/window.innerHeight-.5)*12;hc.style.transform=`translate(${x}px,${y}px)`;});
-
-// ===================== LIVE MARKET PANEL =====================
-// One smooth event-market path. Hover = volatility shock pulling toward the
-// cursor's implied probability. Click = resolution: outcome ~ Bernoulli(P),
-// then the price pins to {0,1} (see the Terminal Pinning paper).
+// ===================== FULL-SCREEN LIVE MARKET HERO =====================
+// The whole viewport is one event market. Hover/drag = volatility shock
+// pulled toward the cursor's implied probability. Click/tap = resolution:
+// outcome ~ Bernoulli(P), price pins to {0,1} (see Terminal Pinning paper),
+// a giant 1 or 0 flashes, then a new market opens.
 (function(){
-  const cv=document.getElementById('lpCanvas'),read=document.getElementById('lpRead');
+  const cv=document.getElementById('mktCanvas');
   if(!cv)return;
   const ctx=cv.getContext('2d');
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const DPR=Math.min(2,window.devicePixelRatio||1);
   const SAMPLE=1/40;
   let W=0,H=0,N=0,buf=[],markers=[],v=0.5;
-  let phase='live',outcome=null,holdUntil=0;
+  let phase='live',outcome=null,holdUntil=0,flashT=-1e9;
   let mouseX=-1,mouseY=-1,inside=false;
+  let ghosts=[];
   const gauss=()=>((Math.random()+Math.random()+Math.random())-1.5)*2;
-  const y2px=y=>H*(0.10+0.80*(1-y));
+  const TOP=0.20,BAND=0.62;
+  const y2px=y=>H*(TOP+BAND*(1-y));
   function stepLive(dt){
     let vol=0.25,drift=0;
     if(inside){
-      const t=Math.max(0.03,Math.min(0.97,1-((mouseY/H)-0.10)/0.80));
+      const t=Math.max(0.03,Math.min(0.97,1-((mouseY/H)-TOP)/BAND));
       vol=0.6;drift=(t-v)*1.6;
     }
     v+=drift*dt+vol*Math.sqrt(Math.max(.0008,v*(1-v)))*Math.sqrt(dt)*gauss();
@@ -1277,19 +1253,20 @@ document.querySelector('.hero').addEventListener('mousemove',e=>{const x=(e.clie
     const tgt=outcome?0.985:0.015;
     v+=(tgt-v)*Math.min(1,5*dt)+0.10*Math.sqrt(Math.max(.0003,v*(1-v)))*Math.sqrt(dt)*gauss();
     if(Math.abs(v-tgt)<0.008){
-      phase='resolved';holdUntil=performance.now()+1500;
-      read.textContent='RESOLVED → '+(outcome?1:0);
-      read.className='lp-read '+(outcome?'up':'dn');
+      phase='resolved';holdUntil=performance.now()+1600;flashT=performance.now();
     }
   }
+  const stepGhost=g=>{g.v+=0.16*Math.sqrt(Math.max(.0008,g.v*(1-g.v)))*Math.sqrt(SAMPLE)*gauss();g.v=Math.max(.03,Math.min(.97,g.v));g.buf.push(g.v);if(g.buf.length>N)g.buf.shift();};
   function size(){
     const w=cv.offsetWidth,h=cv.offsetHeight;
     if(!w){setTimeout(size,300);return;}
     W=w;H=h;cv.width=w*DPR;cv.height=h*DPR;ctx.setTransform(DPR,0,0,DPR,0,0);
-    N=Math.max(140,Math.floor(w/3));
+    N=Math.max(180,Math.floor(w/3.2));
     if(!buf.length){for(let i=0;i<N;i++){stepLive(SAMPLE);buf.push(v);}}
     else if(buf.length>N){buf=buf.slice(-N);}
     else while(buf.length<N)buf.unshift(buf[0]);
+    if(!ghosts.length)ghosts=[0.3,0.72].map(s=>({v:s,buf:[]}));
+    ghosts.forEach(g=>{if(!g.buf.length){for(let i=0;i<N;i++)stepGhost(g);}else if(g.buf.length>N)g.buf=g.buf.slice(-N);else while(g.buf.length<N)g.buf.unshift(g.buf[0]);});
     render();
   }
   function tracePath(pts){
@@ -1300,41 +1277,68 @@ document.querySelector('.hero').addEventListener('mousemove',e=>{const x=(e.clie
     }
     ctx.lineTo(pts[pts.length-1][0],pts[pts.length-1][1]);
   }
+  const toPts=b=>b.map((y,i)=>[i*(W/(N-1)),y2px(y)]);
   function render(){
+    const now=performance.now();
     ctx.clearRect(0,0,W,H);
-    // gridline at P=0.5 + axis labels
-    ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;ctx.setLineDash([3,7]);
+    // giant ghosted number: live probability, or the resolved outcome
+    const big=Math.min(W*0.24,H*0.46);
+    ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.font='600 '+big+'px Space Grotesk, Inter, sans-serif';
+    if(phase==='resolved'){
+      ctx.fillStyle=outcome?'rgba(48,209,88,.14)':'rgba(255,55,95,.14)';
+      ctx.fillText(outcome?'1':'0',W/2,H*0.53);
+    }else{
+      ctx.fillStyle='rgba(255,255,255,.05)';
+      ctx.fillText(v.toFixed(3),W/2,H*0.53);
+    }
+    // gridline at P=0.5 + tiny axis labels
+    ctx.textAlign='left';ctx.textBaseline='alphabetic';
+    ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;ctx.setLineDash([3,9]);
     ctx.beginPath();ctx.moveTo(0,y2px(0.5));ctx.lineTo(W,y2px(0.5));ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle='rgba(255,255,255,.2)';ctx.font='9px JetBrains Mono, monospace';
-    ctx.fillText('1.0',8,y2px(1)+11);ctx.fillText('0.5',8,y2px(0.5)-5);ctx.fillText('0.0',8,y2px(0)-5);
+    ctx.fillStyle='rgba(255,255,255,.18)';ctx.font='10px JetBrains Mono, monospace';
+    ctx.fillText('1.0',16,y2px(1)-6);ctx.fillText('0.5',16,y2px(0.5)-6);ctx.fillText('0.0',16,y2px(0)+14);
     // resolution markers
     markers.forEach(m=>{
       const x=m*(W/(N-1));
-      ctx.strokeStyle='rgba(255,255,255,.08)';ctx.setLineDash([2,5]);
-      ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();ctx.setLineDash([]);
+      ctx.strokeStyle='rgba(255,255,255,.07)';ctx.setLineDash([2,6]);
+      ctx.beginPath();ctx.moveTo(x,H*0.12);ctx.lineTo(x,H*0.92);ctx.stroke();ctx.setLineDash([]);
+    });
+    // ghost paths for depth
+    ghosts.forEach((g,i)=>{
+      tracePath(toPts(g.buf));
+      ctx.strokeStyle=i?'rgba(191,90,242,.10)':'rgba(0,229,200,.10)';
+      ctx.lineWidth=1.5;ctx.stroke();
     });
     // cursor guide
     if(inside&&phase==='live'){
-      ctx.strokeStyle='rgba(0,229,200,.12)';ctx.beginPath();ctx.moveTo(mouseX,0);ctx.lineTo(mouseX,H);ctx.stroke();
+      ctx.strokeStyle='rgba(0,229,200,.10)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(mouseX,0);ctx.lineTo(mouseX,H);ctx.stroke();
     }
-    const pts=buf.map((y,i)=>[i*(W/(N-1)),y2px(y)]);
+    const pts=toPts(buf);
     const last=pts[pts.length-1];
-    // soft area fill under the curve
+    // soft area fill under the main curve
     tracePath(pts);
     ctx.lineTo(last[0],H);ctx.lineTo(0,H);ctx.closePath();
     const fg=ctx.createLinearGradient(0,0,0,H);
-    fg.addColorStop(0,'rgba(41,151,255,.14)');fg.addColorStop(1,'rgba(41,151,255,0)');
+    fg.addColorStop(0,'rgba(41,151,255,.12)');fg.addColorStop(1,'rgba(41,151,255,0)');
     ctx.fillStyle=fg;ctx.fill();
     // gradient stroke
     const grad=ctx.createLinearGradient(0,0,W,0);
     grad.addColorStop(0,'#00e5c8');grad.addColorStop(.55,'#2997ff');grad.addColorStop(1,'#bf5af2');
     tracePath(pts);
-    ctx.strokeStyle=grad;ctx.lineWidth=2;ctx.lineJoin='round';ctx.lineCap='round';
-    ctx.shadowColor='rgba(41,151,255,.8)';ctx.shadowBlur=8;ctx.stroke();ctx.shadowBlur=0;
+    ctx.strokeStyle=grad;ctx.lineWidth=2.5;ctx.lineJoin='round';ctx.lineCap='round';
+    ctx.shadowColor='rgba(41,151,255,.8)';ctx.shadowBlur=10;ctx.stroke();ctx.shadowBlur=0;
     // glowing head
     const headC=phase==='live'?'#00e5c8':(outcome?'#30d158':'#ff375f');
-    ctx.beginPath();ctx.fillStyle=headC;ctx.shadowColor=headC;ctx.shadowBlur=12;
-    ctx.arc(last[0],last[1],3.5,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+    ctx.beginPath();ctx.fillStyle=headC;ctx.shadowColor=headC;ctx.shadowBlur=18;
+    ctx.arc(last[0],last[1],4.5,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;
+    // resolution flash wash
+    const fa=0.20*(1-(now-flashT)/700);
+    if(fa>0){
+      ctx.fillStyle=outcome?'rgba(48,209,88,'+fa+')':'rgba(255,55,95,'+fa+')';
+      ctx.fillRect(0,0,W,H);
+    }
   }
   function frame(now){
     if(document.visibilityState!=='visible')return;
@@ -1342,18 +1346,21 @@ document.querySelector('.hero').addEventListener('mousemove',e=>{const x=(e.clie
     while(acc>=SAMPLE){
       if(phase==='live')stepLive(SAMPLE);
       else if(phase==='pinning')stepPin(SAMPLE);
-      else if(now>=holdUntil){phase='live';v=0.5;markers.push(N-1);read.className='lp-read';}
+      else if(now>=holdUntil){phase='live';v=0.5;markers.push(N-1);}
       buf.push(v);
       if(buf.length>N){buf.shift();markers=markers.map(m=>m-1).filter(m=>m>=0);}
+      ghosts.forEach(stepGhost);
       acc-=SAMPLE;
     }
-    if(phase!=='resolved')read.textContent='P = '+v.toFixed(3);
     render();
   }
   let lastT=performance.now(),acc=0,rafOk=false;
   function loop(now){rafOk=true;frame(now);requestAnimationFrame(loop);}
-  cv.addEventListener('mousemove',e=>{const r=cv.getBoundingClientRect();mouseX=e.clientX-r.left;mouseY=e.clientY-r.top;inside=true;});
+  const setMouse=(x,y)=>{const r=cv.getBoundingClientRect();mouseX=x-r.left;mouseY=y-r.top;inside=true;};
+  cv.addEventListener('mousemove',e=>setMouse(e.clientX,e.clientY));
   cv.addEventListener('mouseleave',()=>{inside=false;});
+  cv.addEventListener('touchmove',e=>{if(e.touches.length)setMouse(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
+  cv.addEventListener('touchend',()=>{setTimeout(()=>{inside=false;},300);},{passive:true});
   cv.addEventListener('click',()=>{if(phase==='live'){outcome=Math.random()<v?1:0;phase='pinning';}});
   size();addEventListener('resize',size);
   if(!reduced){
