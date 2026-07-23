@@ -275,6 +275,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
     <h1><span class="line">Palash</span><span class="line gt">Shah</span></h1>
     <p class="hero-sub">Quantitative researcher at Carnegie Mellon University. I develop the mathematics that lets prediction markets trade like real derivatives markets &mdash; option pricing on bounded underlyings, belief volatility, market making, and margin &mdash; and build the systems that run on it.</p>
     <div class="hero-tags">
+      <span class="hero-tag">Terminal Pinning</span>
       <span class="hero-tag">Option-Implied Event Contracts</span>
       <span class="hero-tag">Jacobi Diffusion</span>
       <span class="hero-tag">Belief Volatility</span>
@@ -299,7 +300,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
       <div class="about-text rv" style="transition-delay:.2s">
         <h3>I make markets that trade probabilities behave like markets you can actually hedge.</h3>
         <p>I'm <span class="hl">Palash Shah</span>, a student at <span class="hl">Carnegie Mellon University</span> working at the intersection of mathematical finance, machine learning, and market design.</p>
-        <p>My core research is <span class="hl">Option-Implied Event Contracts</span> &mdash; a complete derivatives framework that treats a prediction market price as a bounded stochastic underlying via the Jacobi diffusion. It derives closed-form option pricing, a full Greeks calculus, variance swaps on beliefs, and the margin methodology an exchange would need to clear these products.</p>
+        <p>My most recent paper, <span class="hl">Terminal Pinning in Prediction Markets</span>, models how event-contract prices collapse to {0,1} at resolution through information-driven Brownian bridges &mdash; with implied-volatility asymptotics validated on 50 resolved Polymarket markets totalling $6.4B in volume. It sits atop my broader <span class="hl">Option-Implied Event Contracts</span> framework: closed-form option pricing on bounded underlyings, a full Greeks calculus, variance swaps on beliefs, and the margin methodology an exchange would need to clear these products.</p>
         <p>The theorems don't stay on paper: each framework here is paired with working systems &mdash; pricing engines, calibrators, market-making simulators, hedging engines. Alongside, I research implied volatility surfaces through spectral clustering, LSTM forecasting, and reinforcement learning.</p>
         <div class="about-links">
           <a href="https://www.linkedin.com/in/palash-shah-me/" target="_blank" class="btn btn-p">LinkedIn &rarr;</a>
@@ -385,7 +386,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
   <div class="container">
     <div class="cat-hdr rv"><div class="cat-num">04</div><div class="cat-info"><h2>Research & Publications</h2><p>Original working papers and theoretical contributions to quantitative finance and prediction market theory.</p></div><span class="cat-count">2 papers &middot; 1 framework</span></div>
     <div class="rgrid sg">
-      <div class="rc" data-project="paper-oiec"><span class="ptag">Working Paper &middot; Feb 2026</span><h3>Option-Implied Event Contracts: A Complete Framework for Derivatives on Prediction Markets</h3><div class="pmeta">Palash Shah, Carnegie Mellon &middot; 42 pages &middot; 23 sections</div><p class="pdesc">Introduces OIECs &mdash; derivatives treating prediction market prices as bounded stochastic underlyings. Closed-form pricing, complete Greeks, market completeness, BVIX, bonding curves, and exchange infrastructure.</p><div class="topics"><span class="topic">Jacobi Process</span><span class="topic">Option Pricing</span><span class="topic">Completeness</span><span class="topic">BVIX</span><span class="topic">Bonding Curves</span></div><div class="click-hint">Click to explore &rarr;</div></div>
+      <div class="rc" data-project="paper-pinning"><span class="ptag">Working Paper &middot; Jun 2026</span><h3>Terminal Pinning in Prediction Markets: Option Pricing Near Event Resolution via Information-Driven Bridge Dynamics</h3><div class="pmeta">Palash Shah, Carnegie Mellon &middot; 29 pages</div><p class="pdesc">An information-based framework where pinning to {0,1} emerges endogenously: the price is a martingale mixture of two Brownian bridges. Sharp implied-volatility asymptotics, a completeness theorem, and empirical validation on 50 resolved Polymarket markets totalling $6.4B in volume.</p><div class="topics"><span class="topic">Brownian Bridge</span><span class="topic">Information-Based Pricing</span><span class="topic">IV Asymptotics</span><span class="topic">Completeness</span><span class="topic">Polymarket Empirics</span></div><div class="click-hint">Click to explore &rarr;</div></div>
       <div class="rc" data-project="paper-iv"><span class="ptag">Working Paper &middot; Feb 2026</span><h3>Emerging Paradigms in Quantitative Finance: LSTM, RL, and Regime Detection within Implied Volatility</h3><div class="pmeta">Palash Shah, Carnegie Mellon &middot; 23 pages</div><p class="pdesc">Unified framework where the IV surface defines state space, spectral clustering identifies regimes, LSTMs forecast evolution, and RL agents map forecasts into trading policies.</p><div class="topics"><span class="topic">Implied Volatility</span><span class="topic">Spectral Clustering</span><span class="topic">LSTM</span><span class="topic">RL</span><span class="topic">Regime Detection</span></div><div class="click-hint">Click to explore &rarr;</div></div>
     </div>
     <div style="margin-top:24px">
@@ -668,22 +669,25 @@ hedge: {
   interactive: "hedge_toggle",
   chips: ["Delta Hedging","Greeks PDE","Real-Time","Risk Engine","Vega"]
 },
-"paper-oiec": {
-  title: "Option-Implied Event Contracts: A Complete Framework for Derivatives on Prediction Markets",
+"paper-pinning": {
+  title: "Terminal Pinning in Prediction Markets: Option Pricing Near Event Resolution via Information-Driven Bridge Dynamics",
   tag: '<span class="tag tag-pp">Paper</span>',
   status: "Working Paper", statusClass: "sd-l",
-  paperLink: "paper-oiec.pdf",
-  desc: `<p>This 42-page paper develops a comprehensive mathematical framework for pricing and hedging derivative contracts written on prediction market event futures. It spans 23 sections covering model setup, contract definitions, pricing formulas, Greeks, market completeness, numerical methods, calibration, product specification, margin methodology, market-making economics, and advanced extensions including BVIX, bonding curves, self-referential derivatives, and maximum entropy pricing.</p>
-<p><strong>Key contributions:</strong> Jacobi diffusion model for bounded probabilities, closed-form option pricing via Legendre polynomials, complete Greeks calculus with bounded domains, market completeness proof, belief variance swaps with model-free replication, confidence-weighted event digitals, and a full exchange infrastructure specification.</p>`,
+  paperLink: "paper-pinning.pdf",
+  desc: `<p>Prediction-market event futures converge to binary outcomes {0,1} at a known terminal time. Existing models impose this "pinning" as a boundary condition; this paper makes it emerge endogenously. Conditional on the unobserved outcome, the price follows a Brownian-bridge process; unconditionally it is a martingale mixture of two such bridges weighted by the posterior probability of the event.</p>
+<p><strong>Key contributions:</strong> endogenous pinning at a power-law rate, sharp leading-order implied-volatility asymptotics near resolution with a closed-form constant \\(\\Sigma^*(p,K)\\), and a completeness theorem &mdash; the event future and money market alone are incomplete because the diffusion coefficient vanishes in the terminal regime, and adding a single traded European option restores completeness.</p>
+<p><strong>Empirics:</strong> all three central predictions are verified on a panel of 50 resolved Polymarket binary markets &mdash; $6.4B of cumulative trading volume, January 2024 to April 2026, spanning 19 topical categories. The full data-collection and analysis pipeline is released with the paper.</p>`,
   math: [
-    {label:"Core SDE", tex:"dP_t = \\sigma\\sqrt{P_t(1-P_t)}\\,dW_t^{\\mathbb{Q}}"},
-    {label:"Transition Density", tex:"p(t,x;T,y) = \\sum_{n=0}^{\\infty} c_n(x)\\,c_n(y)\\,w(y)\\,e^{-\\lambda_n(T-t)}"},
-    {label:"Risk-Neutral Pricing", tex:"P_t = e^{-r(T-t)}\\,\\mathbb{Q}(E \\mid \\mathcal{F}_t)"},
-    {label:"Market Completeness", tex:"\\text{Every } \\mathcal{F}_T\\text{-measurable claim is replicable}"}
+    {label:"Event Future Price", tex:"P_t = \\mathbb{Q}(E \\mid \\mathcal{F}_t)"},
+    {label:"Conditional Logit Bridge", tex:"L_\\tau \\mid \\{P_t\\!=\\!p,\\,X_T\\!=\\!x\\} \\sim \\mathcal{N}\\!\\big(\\mathrm{logit}(p) + (2x\\!-\\!1)\\beta_0^2 L,\\; \\beta_0^2 L\\big),\\quad L=\\log\\tfrac{T-t}{T-\\tau}"},
+    {label:"Terminal Collapse", tex:"\\mathrm{Law}(P_t) \\;\\Rightarrow\\; p_0\\,\\delta_1 + (1-p_0)\\,\\delta_0, \\qquad t \\to T^-"},
+    {label:"Power-Law Pinning Rate", tex:"\\mathbb{Q}\\big(P_t \\in (\\epsilon,1-\\epsilon)\\big) \\;\\le\\; \\tfrac{1}{\\epsilon(1-\\epsilon)}\\Big(\\tfrac{T-t}{T}\\Big)^{\\beta_0^2/2}"},
+    {label:"Call Decomposition", tex:"c(t,p;\\tau,K) = p\\,c^{(1)} + (1-p)\\,c^{(0)}"},
+    {label:"Limiting Call Price", tex:"\\lim_{\\tau \\to T^-} c(t,p;\\tau,K) = p\\,(1-K)"}
   ],
-  chart: "paper_oiec_surface",
+  chart: "pinning_paths",
   interactive: null,
-  chips: ["42 Pages","23 Sections","Jacobi Process","Option Pricing","Greeks","Market Completeness","BVIX","Bonding Curves","Margin"]
+  chips: ["29 Pages","Brownian Bridge","Information-Based Pricing","IV Asymptotics","Market Completeness","50 Polymarket Markets","$6.4B Volume"]
 },
 "paper-iv": {
   title: "Emerging Paradigms in Quantitative Finance: LSTM, RL, and Regime Detection within Implied Volatility",
@@ -846,7 +850,23 @@ function buildChart(type, canvas) {
         u+=shock;h+=shock*0.15+0.5*(Math.random()-.5);hedged.push(h);unhedged.push(u);}
       return {type:'line',data:{labels,datasets:[{label:'Unhedged P&L',data:unhedged,borderColor:chartColors.pink,borderWidth:2,pointRadius:0,tension:.3},{label:'Delta-Hedged P&L',data:hedged,borderColor:chartColors.cyan,borderWidth:2,pointRadius:0,tension:.3}]},options:{responsive:true,plugins:{legend:{labels:{color:chartColors.gridText}},title:{display:true,text:'Hedged vs Unhedged Portfolio P&L',color:chartColors.gridText,font:{family:'Space Grotesk',size:13}}},scales:{x:{...defaultAxes.x,title:{display:true,text:'Time',color:chartColors.gridText}},y:{...defaultAxes.y,title:{display:true,text:'Cumulative P&L',color:chartColors.gridText}}}}};
     },
-    paper_oiec_surface: () => builders.bonding_curve(),
+    pinning_paths: () => {
+      // Bridge-mixture simulation in logit space: L += (2x-1)·β₀²·dl + β₀·√dl·Z, dl = log((T-tᵢ)/(T-tᵢ₊₁))
+      const datasets=[];const N=120,T=1,tEnd=0.995,b0=1.1,p0=0.55;
+      const randn=()=>((Math.random()+Math.random()+Math.random())-1.5)*2;
+      for(let p=0;p<6;p++){
+        const x=Math.random()<p0?1:0;
+        let Lg=Math.log(p0/(1-p0));const d=[];
+        for(let i=0;i<N;i++){
+          const t0=tEnd*i/N,t1=tEnd*(i+1)/N;
+          const dl=Math.log((T-t0)/(T-t1));
+          Lg+=(2*x-1)*b0*b0*dl+b0*Math.sqrt(dl)*randn();
+          d.push({x:t1,y:Math.exp(Lg)/(1+Math.exp(Lg))});
+        }
+        datasets.push({label:`Path ${p+1} (X_T=${x})`,data:d,borderColor:x?[chartColors.cyan,chartColors.green,chartColors.teal][p%3]:[chartColors.pink,chartColors.orange,chartColors.purple][p%3],borderWidth:1.5,pointRadius:0,tension:.25,fill:false});
+      }
+      return {type:'line',data:{datasets},options:{responsive:true,plugins:{legend:{display:false},title:{display:true,text:'Bridge-Mixture Paths: Endogenous Pinning to {0,1} at Resolution',color:chartColors.gridText,font:{family:'Space Grotesk',size:13}}},scales:{x:{...defaultAxes.x,type:'linear',min:0,max:1,title:{display:true,text:'t / T (time to resolution)',color:chartColors.gridText}},y:{...defaultAxes.y,min:0,max:1,title:{display:true,text:'P(t)',color:chartColors.gridText}}}}};
+    },
     paper_iv_regimes: () => builders.regime_probs(),
     margin_chart: () => {
       const labels=[],im=[],vm=[];
