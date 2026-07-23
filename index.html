@@ -245,6 +245,29 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 .paper-dl:hover{background:rgba(0,229,200,.12);transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,229,200,.15)}
 .paper-dl svg{width:20px;height:20px;fill:currentColor}
 
+/* HERO SIM CANVAS */
+#heroSim{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:.5;mask-image:radial-gradient(ellipse at center,#000 25%,transparent 78%);-webkit-mask-image:radial-gradient(ellipse at center,#000 25%,transparent 78%)}
+
+/* QUANT TERMINAL */
+.qterm{position:fixed;right:28px;bottom:28px;width:min(620px,calc(100vw - 32px));z-index:6000;background:rgba(8,8,16,.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(0,229,200,.25);border-radius:14px;box-shadow:0 24px 80px rgba(0,0,0,.6);overflow:hidden;transform:translateY(24px);opacity:0;pointer-events:none;transition:all .35s var(--ease);font-family:var(--fm)}
+.qterm.open{transform:translateY(0);opacity:1;pointer-events:auto}
+.qterm-bar{display:flex;align-items:center;gap:7px;padding:10px 14px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--bdr)}
+.qterm-dot{width:11px;height:11px;border-radius:50%}
+.qd-r{background:#ff5f57}.qd-y{background:#febc2e}.qd-g{background:#28c840}
+.qterm-title{margin-left:8px;font-size:.68rem;color:var(--t3)}
+.qterm-x{margin-left:auto;background:none;border:none;color:var(--t3);font-size:1rem;cursor:pointer;padding:0 4px;font-family:var(--fd)}
+.qterm-x:hover{color:var(--t1)}
+.qterm-out{padding:14px 16px 4px;max-height:280px;overflow-y:auto;font-size:.76rem;line-height:1.7}
+.qterm-row{margin-bottom:4px;word-break:break-word}
+.qterm-row a{color:var(--cyan)}
+.qcmd{color:var(--t2)}.qerr{color:var(--pink)}.qdim{color:var(--t3)}
+.qpath{color:var(--cyan);letter-spacing:1px}
+.qterm-line{display:flex;align-items:center;gap:10px;padding:10px 16px 14px;border-top:1px solid rgba(255,255,255,.03)}
+.qterm-ps1{color:var(--green);font-weight:600}
+.qterm-line input{flex:1;background:none;border:none;outline:none;color:var(--t1);font-family:var(--fm);font-size:.78rem;caret-color:var(--cyan)}
+.term-hint{color:var(--t3);text-decoration:none;border-bottom:1px dashed rgba(0,229,200,.3);cursor:pointer}
+.term-hint:hover{color:var(--cyan)}
+
 /* RESPONSIVE */
 @media(max-width:1024px){.fc{grid-template-columns:1fr}.fc-vis{min-height:200px}.about-grid{grid-template-columns:1fr;gap:50px}.rgrid{grid-template-columns:1fr}.tbgrid{grid-template-columns:repeat(2,1fr)}.wm{font-size:clamp(5rem,12vw,10rem)}}
 @media(max-width:768px){nav{padding:16px 24px}.nav-links{display:none}.container{padding:0 24px}.pgrid{grid-template-columns:1fr}.carousel .pc{width:320px}.cat-hdr{flex-wrap:wrap}.cat-count{margin-left:0}.cat-num{font-size:2.5rem}.fl-stat{display:none}.av-c{width:220px;height:220px}.av-init{font-size:4rem}.overlay-inner{padding:80px 24px 60px}}
@@ -270,6 +293,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 <!-- HERO -->
 <section class="hero">
   <div class="hero-grid"></div>
+  <canvas id="heroSim" aria-hidden="true"></canvas>
   <div class="hero-content">
     <div class="hero-badge"><span class="dot"></span>Building the derivatives layer for prediction markets</div>
     <h1><span class="line">Palash</span><span class="line gt">Shah</span></h1>
@@ -418,8 +442,15 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 <footer id="contact">
   <div class="fi rv"><h3>Let's Connect</h3><p>Interested in prediction market derivatives, quantitative research, or collaboration? I read everything.</p>
   <div class="fl"><a href="mailto:palash.shah08@gmail.com" class="flk flk-p">Email Me</a><a href="https://www.linkedin.com/in/palash-shah-me/" target="_blank" class="flk flk-g">LinkedIn</a><a href="https://github.com/palash-shah" target="_blank" class="flk flk-g">GitHub</a></div>
-  <div class="fcopy">&copy; 2026 Palash Shah &middot; Carnegie Mellon University</div></div>
+  <div class="fcopy">&copy; 2026 Palash Shah &middot; Carnegie Mellon University &middot; <a class="term-hint" id="qtermHint">press <b>/</b> for a terminal</a></div></div>
 </footer>
+
+<!-- QUANT TERMINAL -->
+<div class="qterm" id="qterm" role="dialog" aria-label="Quant terminal">
+  <div class="qterm-bar"><span class="qterm-dot qd-r"></span><span class="qterm-dot qd-y"></span><span class="qterm-dot qd-g"></span><span class="qterm-title">palash@quant &mdash; zsh</span><button class="qterm-x" id="qtermClose">&times;</button></div>
+  <div class="qterm-out" id="qtermOut"></div>
+  <div class="qterm-line"><span class="qterm-ps1">&#10142;</span><input id="qtermIn" autocomplete="off" spellcheck="false" placeholder="type `help`"></div>
+</div>
 
 <!-- OVERLAY -->
 <div class="overlay" id="overlay">
@@ -1173,7 +1204,7 @@ function closeOverlay(){
 
 document.getElementById('ovClose').addEventListener('click',closeOverlay);
 document.getElementById('ovBack').addEventListener('click',(e)=>{e.preventDefault();closeOverlay();});
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeOverlay();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(qterm.classList.contains('open'))qToggle(false);else closeOverlay();}});
 
 // Card click delegation
 document.addEventListener('click',e=>{
@@ -1198,6 +1229,95 @@ window.addEventListener('scroll',()=>{wms.forEach(w=>{const r=w.parentElement.ge
 // ===================== HERO PARALLAX =====================
 const hc=document.querySelector('.hero-content');
 document.querySelector('.hero').addEventListener('mousemove',e=>{const x=(e.clientX/window.innerWidth-.5)*12;const y=(e.clientY/window.innerHeight-.5)*12;hc.style.transform=`translate(${x}px,${y}px)`;});
+
+// ===================== HERO DIFFUSION SIM =====================
+// Live Jacobi paths: dP = 0.05·√(P(1−P))·dW, oscilloscope-style scroll
+(function(){
+  const cv=document.getElementById('heroSim');if(!cv)return;
+  const ctx=cv.getContext('2d');
+  const colors=['#00e5c8','#2997ff','#bf5af2','#30d158','#ff9f0a'];
+  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let W,H,paths;
+  const step=v=>{v+=0.05*Math.sqrt(Math.max(0.0005,v*(1-v)))*(Math.random()*2-1);return Math.max(0.02,Math.min(0.98,v));};
+  function reset(){
+    W=cv.width=cv.offsetWidth;H=cv.height=cv.offsetHeight;
+    if(!W){setTimeout(reset,300);return;}
+    const n=Math.max(120,Math.floor(W/4));
+    paths=colors.map((c,i)=>{
+      let v=0.2+0.15*i;const buf=[];
+      for(let j=0;j<n;j++){v=step(v);buf.push(v);}
+      return {c,buf,n};
+    });
+    render();
+  }
+  function render(){
+    ctx.clearRect(0,0,W,H);
+    ctx.lineWidth=1.2;ctx.globalAlpha=.55;
+    paths.forEach(p=>{
+      ctx.beginPath();ctx.strokeStyle=p.c;
+      p.buf.forEach((y,j)=>{const px=j*(W/p.n),py=H*(0.15+0.7*(1-y));j?ctx.lineTo(px,py):ctx.moveTo(px,py);});
+      ctx.stroke();
+    });
+    ctx.globalAlpha=1;
+  }
+  function tick(){
+    if(document.visibilityState==='visible'){
+      paths.forEach(p=>{p.buf.push(step(p.buf[p.buf.length-1]));if(p.buf.length>p.n)p.buf.shift();});
+      render();
+    }
+    requestAnimationFrame(tick);
+  }
+  reset();addEventListener('resize',reset);
+  if(!reduced)requestAnimationFrame(tick);
+})();
+
+// ===================== QUANT TERMINAL =====================
+const qterm=document.getElementById('qterm'),qOut=document.getElementById('qtermOut'),qIn=document.getElementById('qtermIn');
+let qHist=[],qHi=0;
+function qPrint(html,cls){const d=document.createElement('div');d.className='qterm-row'+(cls?' '+cls:'');d.innerHTML=html;qOut.appendChild(d);qOut.scrollTop=qOut.scrollHeight;}
+function qEsc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function qToggle(open){
+  const o=open===undefined?!qterm.classList.contains('open'):open;
+  qterm.classList.toggle('open',o);
+  if(o){qIn.focus();if(!qOut.childElementCount)qPrint('quant terminal v1.0 &mdash; type <b>help</b>','qdim');}
+  else qIn.blur();
+}
+const qSpark=v=>'▁▂▃▄▅▆▇█'[Math.max(0,Math.min(7,Math.floor(v*8)))];
+const QCMDS={
+  help:()=>qPrint('commands: <b>papers</b> &middot; <b>projects</b> &middot; <b>open</b> &lt;id&gt; &middot; <b>sim</b> [&sigma;] &middot; <b>pin</b> &lt;p&gt; &lt;K&gt; &middot; <b>bvix</b> &lt;p&gt; &lt;&sigma;&gt; &middot; <b>whoami</b> &middot; <b>github</b> &middot; <b>contact</b> &middot; <b>clear</b>'),
+  papers:()=>{qPrint('[1] Terminal Pinning in Prediction Markets (2026) &mdash; <a href="paper-pinning.pdf" target="_blank">pdf</a>');qPrint('[2] Emerging Paradigms in Quantitative Finance (2026) &mdash; <a href="paper-iv.pdf" target="_blank">pdf</a>');},
+  projects:()=>qPrint('ids: '+Object.keys(P).join(', ')+' &mdash; try <b>open</b> &lt;id&gt;'),
+  open:a=>{if(P[a[0]]){qToggle(false);openProject(a[0]);}else qPrint('unknown id: '+qEsc(a[0]||'')+' &mdash; try <b>projects</b>','qerr');},
+  sim:a=>{const s=Math.min(0.8,Math.max(0.05,parseFloat(a[0])||0.35));let v=0.5,out='';for(let i=0;i<44;i++){v+=s*Math.sqrt(Math.max(.001,v*(1-v)))*(Math.random()-.5);v=Math.max(.02,Math.min(.98,v));out+=qSpark(v);}qPrint('<span class="qpath">'+out+'</span> <span class="qdim">dP = '+s.toFixed(2)+'&middot;&radic;(P(1&minus;P))&middot;dW</span>');},
+  pin:a=>{const p=parseFloat(a[0]),K=parseFloat(a[1]);if(!(p>0&&p<1&&K>0&&K<1))return qPrint('usage: pin &lt;p&gt; &lt;K&gt; in (0,1) &mdash; e.g. pin 0.6 0.5','qerr');qPrint('lim<sub>&tau;&rarr;T&#8315;</sub> c(p='+p+', K='+K+') = p&middot;(1&minus;K) = <b>'+(p*(1-K)).toFixed(4)+'</b> <span class="qdim">// Terminal Pinning paper, eq. (24)</span>');},
+  bvix:a=>{const p=parseFloat(a[0]),s=parseFloat(a[1]);if(!(p>0&&p<1)||isNaN(s))return qPrint('usage: bvix &lt;p&gt; &lt;&sigma;&gt; &mdash; e.g. bvix 0.6 0.3','qerr');qPrint('fair variance strike = &sigma;&sup2;&middot;p&middot;(1&minus;p) = <b>'+(s*s*p*(1-p)).toFixed(4)+'</b>');},
+  whoami:()=>qPrint('palash &mdash; quant researcher, CMU. builds derivatives math for markets that trade probabilities.'),
+  github:()=>{window.open('https://github.com/palash-shah','_blank');qPrint('opening github&hellip;','qdim');},
+  linkedin:()=>{window.open('https://www.linkedin.com/in/palash-shah-me/','_blank');qPrint('opening linkedin&hellip;','qdim');},
+  contact:()=>qPrint('<a href="mailto:palash.shah08@gmail.com">palash.shah08@gmail.com</a>'),
+  clear:()=>{qOut.innerHTML='';},
+  sudo:a=>qPrint(a.join(' ')==='hire me'?'permission granted. <a href="mailto:palash.shah08@gmail.com">palash.shah08@gmail.com</a>':'palash is not in the sudoers file. this incident will be reported.','qdim')
+};
+function qRun(line){
+  qPrint('<span class="qterm-ps1">&#10142;</span> '+qEsc(line),'qcmd');
+  const parts=line.trim().split(/\s+/),cmd=parts[0],args=parts.slice(1);
+  if(!cmd)return;
+  if(QCMDS[cmd])QCMDS[cmd](args);
+  else qPrint('zsh: command not found: '+qEsc(cmd)+' &mdash; try <b>help</b>','qerr');
+}
+qIn.addEventListener('keydown',e=>{
+  if(e.key==='Enter'){const v=qIn.value;if(v.trim()){qHist.push(v);}qHi=qHist.length;qIn.value='';qRun(v);}
+  else if(e.key==='ArrowUp'){if(qHi>0)qIn.value=qHist[--qHi];e.preventDefault();}
+  else if(e.key==='ArrowDown'){qIn.value=qHi<qHist.length-1?qHist[++qHi]:(qHi=qHist.length,'');e.preventDefault();}
+});
+document.getElementById('qtermClose').addEventListener('click',()=>qToggle(false));
+document.getElementById('qtermHint').addEventListener('click',()=>qToggle(true));
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&!e.metaKey&&!e.ctrlKey&&!e.altKey){
+    const t=document.activeElement.tagName;
+    if(t!=='INPUT'&&t!=='TEXTAREA'){e.preventDefault();qToggle(true);}
+  }
+});
 
 // ===================== KATEX PREVIEW EQUATIONS =====================
 document.addEventListener('DOMContentLoaded',()=>{
