@@ -246,7 +246,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 .paper-dl svg{width:20px;height:20px;fill:currentColor}
 
 /* HERO SIM CANVAS */
-#heroSim{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:.5;mask-image:radial-gradient(ellipse at center,#000 25%,transparent 78%);-webkit-mask-image:radial-gradient(ellipse at center,#000 25%,transparent 78%)}
+#heroSim{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:.85;mask-image:radial-gradient(ellipse 62% 55% at center,rgba(0,0,0,.28) 38%,#000 72%,rgba(0,0,0,.85) 100%);-webkit-mask-image:radial-gradient(ellipse 62% 55% at center,rgba(0,0,0,.28) 38%,#000 72%,rgba(0,0,0,.85) 100%)}
+.sim-badge{position:absolute;left:48px;bottom:36px;z-index:2;display:flex;align-items:center;gap:8px;font-family:var(--fm);font-size:.66rem;color:var(--t2);padding:7px 14px;border-radius:18px;background:rgba(3,3,4,.5);border:1px solid rgba(0,229,200,.18);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.sim-badge .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);animation:pulse 1.6s ease-in-out infinite;box-shadow:0 0 8px rgba(0,229,200,.7)}
+.sim-badge b{color:var(--cyan);font-weight:600}
+@media(max-width:768px){.sim-badge{left:24px;bottom:20px}}
 
 /* QUANT TERMINAL */
 .qterm{position:fixed;right:28px;bottom:28px;width:min(620px,calc(100vw - 32px));z-index:6000;background:rgba(8,8,16,.92);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(0,229,200,.25);border-radius:14px;box-shadow:0 24px 80px rgba(0,0,0,.6);overflow:hidden;transform:translateY(24px);opacity:0;pointer-events:none;transition:all .35s var(--ease);font-family:var(--fm)}
@@ -294,6 +298,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 <section class="hero">
   <div class="hero-grid"></div>
   <canvas id="heroSim" aria-hidden="true"></canvas>
+  <div class="sim-badge"><span class="dot"></span>live sim &mdash; <b>dP = &sigma;&radic;(P(1&minus;P))&thinsp;dW</b></div>
   <div class="hero-content">
     <div class="hero-badge"><span class="dot"></span>Building the derivatives layer for prediction markets</div>
     <h1><span class="line">Palash</span><span class="line gt">Shah</span></h1>
@@ -1238,7 +1243,7 @@ document.querySelector('.hero').addEventListener('mousemove',e=>{const x=(e.clie
   const colors=['#00e5c8','#2997ff','#bf5af2','#30d158','#ff9f0a'];
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
   let W,H,paths;
-  const step=v=>{v+=0.05*Math.sqrt(Math.max(0.0005,v*(1-v)))*(Math.random()*2-1);return Math.max(0.02,Math.min(0.98,v));};
+  const step=v=>{v+=0.09*Math.sqrt(Math.max(0.0005,v*(1-v)))*(Math.random()*2-1);return Math.max(0.02,Math.min(0.98,v));};
   function reset(){
     W=cv.width=cv.offsetWidth;H=cv.height=cv.offsetHeight;
     if(!W){setTimeout(reset,300);return;}
@@ -1252,17 +1257,22 @@ document.querySelector('.hero').addEventListener('mousemove',e=>{const x=(e.clie
   }
   function render(){
     ctx.clearRect(0,0,W,H);
-    ctx.lineWidth=1.2;ctx.globalAlpha=.55;
+    ctx.lineWidth=1.8;ctx.globalAlpha=.8;
     paths.forEach(p=>{
       ctx.beginPath();ctx.strokeStyle=p.c;
+      ctx.shadowColor=p.c;ctx.shadowBlur=6;
       p.buf.forEach((y,j)=>{const px=j*(W/p.n),py=H*(0.15+0.7*(1-y));j?ctx.lineTo(px,py):ctx.moveTo(px,py);});
       ctx.stroke();
+      // glowing ticker head at the newest point
+      const hy=H*(0.15+0.7*(1-p.buf[p.buf.length-1]));
+      ctx.beginPath();ctx.fillStyle=p.c;ctx.shadowBlur=14;
+      ctx.arc((p.buf.length-1)*(W/p.n),hy,3,0,Math.PI*2);ctx.fill();
     });
-    ctx.globalAlpha=1;
+    ctx.shadowBlur=0;ctx.globalAlpha=1;
   }
   function tick(){
     if(document.visibilityState==='visible'){
-      paths.forEach(p=>{p.buf.push(step(p.buf[p.buf.length-1]));if(p.buf.length>p.n)p.buf.shift();});
+      paths.forEach(p=>{for(let s=0;s<2;s++){p.buf.push(step(p.buf[p.buf.length-1]));if(p.buf.length>p.n)p.buf.shift();}});
       render();
     }
     requestAnimationFrame(tick);
