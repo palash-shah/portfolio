@@ -250,6 +250,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
 #mktCanvas{position:absolute;inset:0;width:100%;height:100%;z-index:1;cursor:crosshair}
 .mkt-live{position:absolute;top:104px;left:48px;z-index:2;display:flex;align-items:center;gap:8px;font-family:var(--fm);font-size:.68rem;font-weight:700;letter-spacing:.16em;color:var(--cyan);animation:fiu .8s ease .2s forwards;opacity:0;pointer-events:none}
 .mkt-dot{width:7px;height:7px;border-radius:50%;background:var(--cyan);animation:pulse 1.6s ease-in-out infinite;box-shadow:0 0 10px rgba(0,229,200,.8)}
+.mkt-hint{margin-left:12px;color:var(--t3);font-weight:500;letter-spacing:.08em;text-transform:lowercase;transition:opacity .8s}
+.mkt-hint::before{content:'\00b7';margin-right:12px}
+.mkt-hint.gone{opacity:0}
+.h-tap{display:none}
+@media(hover:none){.h-click{display:none}.h-tap{display:inline}}
 .mkt-sde{position:absolute;bottom:34px;right:48px;z-index:2;font-family:var(--fm);font-size:.72rem;color:var(--t3);animation:fiu .8s ease .35s forwards;opacity:0;pointer-events:none}
 @media(max-width:768px){.mkt-live{left:24px;top:92px}.mkt-sde{right:24px;bottom:26px;font-size:.62rem}}
 
@@ -300,7 +305,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
   <div class="hero-grid"></div>
   <canvas id="mktCanvas" aria-hidden="true"></canvas>
   <h1 class="sr-only">Palash Shah. Quantitative researcher at Carnegie Mellon University working on prediction market derivatives.</h1>
-  <div class="mkt-live"><span class="mkt-dot"></span>LIVE</div>
+  <div class="mkt-live"><span class="mkt-dot"></span>LIVE<span class="mkt-hint" id="mktHint"><span class="h-click">click to pin</span><span class="h-tap">tap to pin</span></span></div>
   <div class="mkt-sde">dP = &sigma;&radic;(P(1&minus;P))&thinsp;dW</div>
   <div class="hero-scroll"><div class="scroll-line"></div></div>
 </section>
@@ -1361,7 +1366,7 @@ window.addEventListener('scroll',()=>{wms.forEach(w=>{const r=w.parentElement.ge
   cv.addEventListener('mouseleave',()=>{inside=false;});
   cv.addEventListener('touchmove',e=>{if(e.touches.length)setMouse(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
   cv.addEventListener('touchend',()=>{setTimeout(()=>{inside=false;},300);},{passive:true});
-  cv.addEventListener('click',()=>{if(phase==='live'){outcome=Math.random()<v?1:0;phase='pinning';}});
+  cv.addEventListener('click',()=>{if(phase==='live'){outcome=Math.random()<v?1:0;phase='pinning';const h=document.getElementById('mktHint');if(h)h.classList.add('gone');}});
   size();addEventListener('resize',size);
   if(!reduced){
     requestAnimationFrame(loop);
