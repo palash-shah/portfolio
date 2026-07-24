@@ -758,8 +758,23 @@ margin: {
 };
 
 // ===================== CHART BUILDERS =====================
-let activeChart = null;
+let activeChart = null, activeChartType = null, activeCanvas = null;
 function destroyChart(){ if(activeChart){activeChart.destroy();activeChart=null;} }
+
+// Live parameters behind the interactive demos. The chart builders read these,
+// so moving a control and calling refreshChart() actually changes the graph.
+const CTRL = {
+  k: 3,                                   // spectral clusters
+  horizon: 30,                            // LSTM forecast days
+  kappa: 2.0, theta: 0.04, xi: 0.30, rho: -0.70,   // Heston
+  ent: {m:true, v:false, s:false},        // max-entropy moment constraints
+  ddMax: 10,                              // position-sizing drawdown stop (%)
+  events: {fed:true, elec:true, gdp:false, infl:false},
+  eps: 0.15,                              // RL exploration
+  hedge: 'delta'
+};
+// rebuild the current chart in place, without replaying the entry animation
+function refreshChart(){ if(activeChartType && activeCanvas) buildChart(activeChartType, activeCanvas, false); }
 
 const chartColors = {
   cyan: '#8b5cf6', blue: '#5b8cf6', purple: '#a78bfa',
@@ -771,8 +786,9 @@ const defaultAxes = {
   y:{grid:{color:chartColors.grid},ticks:{color:chartColors.gridText,font:{family:'JetBrains Mono',size:10}}}
 };
 
-function buildChart(type, canvas) {
+function buildChart(type, canvas, animate) {
   destroyChart();
+  activeChartType = type; activeCanvas = canvas;
   const ctx = canvas.getContext('2d');
   const builders = {
     jacobi_paths: () => {
@@ -819,33 +835,64 @@ function buildChart(type, canvas) {
       return {type:'line',data:{labels,datasets:[{label:'Φ(σ)',data:phi,borderColor:chartColors.cyan,borderWidth:2.5,pointRadius:0,tension:.4},{label:'σ = Φ(σ) line',data:diag,borderColor:'rgba(255,255,255,0.2)',borderWidth:1,pointRadius:0,borderDash:[5,5]}]},options:{responsive:true,plugins:{legend:{labels:{color:chartColors.gridText}},title:{display:true,text:'Fixed-Point Iteration: σ* = Φ(σ*)',color:chartColors.gridText,font:{family:'Space Grotesk',size:13}}},scales:{x:{...defaultAxes.x,title:{display:true,text:'σ',color:chartColors.gridText}},y:{...defaultAxes.y,title:{display:true,text:'Φ(σ)',color:chartColors.gridText}}}}};
     },
     spectral_clusters: () => {
-      const ds=[];const colors=[chartColors.cyan,chartColors.purple,chartColors.orange];
-      for(let c=0;c<3;c++){const pts=[];const cx=[-.5,1,.5][c],cy=[0,0.8,-.6][c];
-        for(let i=0;i<30;i++)pts.push({x:cx+.4*(Math.random()-.5),y:cy+.4*(Math.random()-.5)});
-        ds.push({label:`Regime ${c+1}`,data:pts,backgroundColor:colors[c]+'88',borderColor:colors[c],pointRadius:5,pointHoverRadius:7});}
-      return {type:'scatter',data:{datasets:ds},options:{responsive:true,plugins:{legend:{labels:{color:chartColors.gridText}},title:{display:true,text:'Spectral Embedding: 3-Cluster Volatility Regimes',color:chartColors.gridText,font:{family:'Space Grotesk',size:13}}},scales:{x:{...defaultAxes.x,title:{display:true,text:'Eigenvector 1',color:chartColors.gridText}},y:{...defaultAxes.y,title:{display:true,text:'Eigenvector 2',color:chartColors.gridText}}}}};
+      // K clusters laid out on the embedding ring: raising K splits the regimes apart
+      const K=CTRL.k, ds=[];
+      const colors=[chartColors.cyan,chartColors.purple,chartColors.orange,chartColors.blue,chartColors.green,chartColors.pink];
+      const n=Math.max(10,Math.round(90/K));
+      for(let c=0;c<K;c++){
+        const ang=2*Math.PI*c/K, cx=Math.cos(ang), cy=Math.sin(ang);
+        const spread=0.30+0.22/K;               // fewer clusters => looser blobs
+        const pts=[];
+        for(let i=0;i<n;i++)pts.push({x:cx+spread*(Math.random()-.5),y:cy+spread*(Math.random()-.5)});
+        ds.push({label:`Regime ${c+1}`,data:pts,backgroundColor:colors[c%colors.length]+'88',borderColor:colors[c%colors.length],pointRadius:5,pointHoverRadius:7});
+      }
+      return {type:'scatter',data:{datasets:ds},options:{responsive:true,plugins:{legend:{labels:{color:chartColors.gridText}},title:{display:true,text:`Spectral Embedding: ${K}-Cluster Volatility Regimes`,color:chartColors.gridText,font:{family:'Space Grotesk',size:13}}},scales:{x:{...defaultAxes.x,min:-1.7,max:1.7,title:{display:true,text:'Eigenvector 1',color:chartColors.gridText}},y:{...defaultAxes.y,min:-1.7,max:1.7,title:{display:true,text:'Eigenvector 2',color:chartColors.gridText}}}}};
     },
     lstm_forecast: () => {
+      // horizon slider extends the forecast; the band widens like sqrt(t)
+      const H=CTRL.horizon, HIST=70, N=HIST+H;
       const labels=[],hist=[],pred=[],upper=[],lower=[];
-      for(let i=0;i<100;i++){labels.push(i);const v=15+5*Math.sin(i/15)+3*Math.random();
-        if(i<70){hist.push(v);pred.push(null);upper.push(null);lower.push(null);}
-        else{hist.push(null);const p=15+5*Math.sin(i/15)+1*(Math.random()-.5);pred.push(p);upper.push(p+3+0.1*(i-70));lower.push(p-3-0.1*(i-70));}}
-      return {type:'line',data:{labels,datasets:[{label:'Historical Vol',data:hist,borderColor:chartColors.cyan,borderWidth:2,pointRadius:0,tension:.3},{label:'LSTM Forecast',data:pred,borderColor:chartColors.orange,borderWidth:2,pointRadius:0,tension:.3},{label:'Upper CI',data:upper,borderColor:'transparent',backgroundColor:'rgba(201,154,91,0.1)',fill:'+1',pointRadius:0,tension:.3},{label:'Lower CI',data:lower,borderColor:'transparent',fill:false,pointRadius:0,tension:.3}]},options:{responsive:true,plugins:{legend:{labels:{color:chartColors.gridText}},title:{display:true,text:'LSTM Volatility Forecast with 95% Confidence Band',color:chartColors.gridText,font:{family:'Space Grotesk',size:13}}},scales:{x:{...defaultAxes.x,title:{display:true,text:'Trading Days',color:chartColors.gridText}},y:{...defaultAxes.y,title:{display:true,text:'Realized Vol (%)',color:chartColors.gridText}}}}};
+      for(let i=0;i<N;i++){labels.push(i);const v=15+5*Math.sin(i/15)+3*Math.random();
+        if(i<HIST){hist.push(v);pred.push(null);upper.push(null);lower.push(null);}
+        else{if(i===HIST){hist[HIST-1]=hist[HIST-1];}
+          hist.push(null);const t=i-HIST;const p=15+5*Math.sin(i/15)+1*(Math.random()-.5);
+          const w=2.2*Math.sqrt(1+t/6);pred.push(p);upper.push(p+w);lower.push(p-w);}}
+      return {type:'line',data:{labels,datasets:[{label:'Historical Vol',data:hist,borderColor:chartColors.cyan,borderWidth:2,pointRadius:0,tension:.3},{label:'LSTM Forecast',data:pred,borderColor:chartColors.orange,borderWidth:2,pointRadius:0,tension:.3},{label:'Upper CI',data:upper,borderColor:'transparent',backgroundColor:'rgba(201,154,91,0.1)',fill:'+1',pointRadius:0,tension:.3},{label:'Lower CI',data:lower,borderColor:'transparent',fill:false,pointRadius:0,tension:.3}]},options:{responsive:true,plugins:{legend:{labels:{color:chartColors.gridText}},title:{display:true,text:`LSTM Volatility Forecast · ${CTRL.horizon}-day horizon, 95% band`,color:chartColors.gridText,font:{family:'Space Grotesk',size:13}}},scales:{x:{...defaultAxes.x,title:{display:true,text:'Trading Days',color:chartColors.gridText}},y:{...defaultAxes.y,title:{display:true,text:'Realized Vol (%)',color:chartColors.gridText}}}}};
     },
     vol_surface: () => {
-      const labels=[],ds=[];const mats=['1M','2M','3M','6M','1Y'];
+      // Heston params drive the surface: theta sets the long-run level, kappa the
+      // term structure's pull toward it, xi the smile curvature, rho the skew.
+      const {kappa,theta,xi,rho}=CTRL;
+      const labels=[],ds=[];const mats=['1M','2M','3M','6M','1Y'],Ts=[1/12,2/12,3/12,.5,1];
       for(let k=80;k<=120;k+=2)labels.push(k);
-      mats.forEach((m,mi)=>{const d=[];const base=20-2*mi;
-        for(let k=80;k<=120;k+=2){const mon=(k-100)/100;d.push(base+12*mon*mon-3*mon+2*Math.random());}
+      const atm=Math.sqrt(Math.max(1e-4,theta))*100, spot=24;
+      mats.forEach((m,mi)=>{
+        const T=Ts[mi], lvl=atm+(spot-atm)*Math.exp(-kappa*T);
+        const d=[];
+        for(let k=80;k<=120;k+=2){
+          const mon=(k-100)/100;
+          const smile=140*xi*mon*mon/Math.sqrt(T+.15);
+          const skew=-70*rho*xi*mon/Math.sqrt(T+.25);
+          d.push(Math.max(1,lvl+smile+skew+0.6*Math.random()));
+        }
         ds.push({label:m,data:d,borderColor:[chartColors.cyan,chartColors.blue,chartColors.purple,chartColors.green,chartColors.orange][mi],borderWidth:2,pointRadius:0,tension:.4});
       });
-      return {type:'line',data:{labels,datasets:ds},options:{responsive:true,plugins:{legend:{labels:{color:chartColors.gridText}},title:{display:true,text:'Implied Volatility Surface Across Strike and Maturity',color:chartColors.gridText,font:{family:'Space Grotesk',size:13}}},scales:{x:{...defaultAxes.x,title:{display:true,text:'Strike (%)',color:chartColors.gridText}},y:{...defaultAxes.y,title:{display:true,text:'IV (%)',color:chartColors.gridText}}}}};
+      return {type:'line',data:{labels,datasets:ds},options:{responsive:true,plugins:{legend:{labels:{color:chartColors.gridText}},title:{display:true,text:`IV Surface · κ=${kappa.toFixed(1)} θ=${theta.toFixed(2)} ξ=${xi.toFixed(2)} ρ=${rho.toFixed(2)}`,color:chartColors.gridText,font:{family:'Space Grotesk',size:13}}},scales:{x:{...defaultAxes.x,title:{display:true,text:'Strike (%)',color:chartColors.gridText}},y:{...defaultAxes.y,title:{display:true,text:'IV (%)',color:chartColors.gridText}}}}};
     },
     maxent_dist: () => {
-      const labels=[],uniform=[],beta=[],maxent=[];
+      // each active moment constraint adds a term to the exponent, so the
+      // least-biased density gets progressively more informative
+      const {m,v:vOn,s}=CTRL.ent;
+      const labels=[],uniform=[],beta=[],raw=[];
       for(let i=1;i<100;i++){const x=i/100;labels.push(x.toFixed(2));uniform.push(1);
         beta.push(6*x*(1-x));
-        const v=Math.exp(-2*(x-0.6)*(x-0.6)/0.04);maxent.push(v/0.22);}
+        let e=0;
+        if(m) e+= 6*(x-0.6)*(x-0.6);
+        if(vOn) e+= 16*(x-0.6)*(x-0.6);
+        if(s) e+= -55*Math.pow(x-0.6,3);
+        raw.push(Math.exp(-e));}
+      const mean=raw.reduce((a,b)=>a+b,0)/raw.length;
+      const maxent=raw.map(r=>r/mean);   // normalize to unit mass on [0,1]
       return {type:'line',data:{labels,datasets:[{label:'Uniform (no info)',data:uniform,borderColor:'rgba(255,255,255,0.2)',borderWidth:1.5,pointRadius:0,borderDash:[5,5]},{label:'Beta(2,2)',data:beta,borderColor:chartColors.purple,borderWidth:2,pointRadius:0,tension:.3},{label:'Max Entropy',data:maxent,borderColor:chartColors.cyan,borderWidth:2.5,pointRadius:0,tension:.3}]},options:{responsive:true,plugins:{legend:{labels:{color:chartColors.gridText}},title:{display:true,text:'Maximum Entropy vs Parametric Distributions on [0,1]',color:chartColors.gridText,font:{family:'Space Grotesk',size:13}}},scales:{x:{...defaultAxes.x,title:{display:true,text:'x',color:chartColors.gridText}},y:{...defaultAxes.y,title:{display:true,text:'q(x)',color:chartColors.gridText}}}}};
     },
     regime_probs: () => {
@@ -858,30 +905,61 @@ function buildChart(type, canvas) {
       return {type:'line',data:{labels,datasets:[{label:'Low Vol Regime',data:r1,borderColor:chartColors.cyan,backgroundColor:'rgba(139,92,246,0.1)',borderWidth:2,pointRadius:0,tension:.3,fill:true},{label:'Trending Regime',data:r2,borderColor:chartColors.purple,backgroundColor:'rgba(167,139,250,0.1)',borderWidth:2,pointRadius:0,tension:.3,fill:true},{label:'Crisis Regime',data:r3,borderColor:chartColors.pink,backgroundColor:'rgba(244,71,107,0.1)',borderWidth:2,pointRadius:0,tension:.3,fill:true}]},options:{responsive:true,plugins:{legend:{labels:{color:chartColors.gridText}},title:{display:true,text:'Regime Probabilities Over Time',color:chartColors.gridText,font:{family:'Space Grotesk',size:13}}},scales:{x:{...defaultAxes.x,title:{display:true,text:'Time',color:chartColors.gridText}},y:{...defaultAxes.y,min:0,max:1,title:{display:true,text:'P(Regime)',color:chartColors.gridText}}}}};
     },
     rl_training: () => {
+      // epsilon trades off exploration noise against convergence speed
+      const e=CTRL.eps;
       const labels=[],rewards=[];let r=-50;
-      for(let i=0;i<200;i++){labels.push(i);r+=0.5+2*(Math.random()-.45);rewards.push(r+10*Math.random());}
-      return {type:'line',data:{labels,datasets:[{label:'Cumulative Reward',data:rewards,borderColor:chartColors.cyan,borderWidth:2,pointRadius:0,tension:.3,fill:{target:'origin',above:'rgba(139,92,246,0.05)'}}]},options:{responsive:true,plugins:{legend:{labels:{color:chartColors.gridText}},title:{display:true,text:'RL Agent Training: Cumulative Reward per Episode',color:chartColors.gridText,font:{family:'Space Grotesk',size:13}}},scales:{x:{...defaultAxes.x,title:{display:true,text:'Episode',color:chartColors.gridText}},y:{...defaultAxes.y,title:{display:true,text:'Cumulative Reward',color:chartColors.gridText}}}}};
+      for(let i=0;i<200;i++){labels.push(i);
+        r+=(1.1*(1-e))+ (2+18*e)*(Math.random()-.5);
+        rewards.push(r+(4+40*e)*(Math.random()-.5));}
+      return {type:'line',data:{labels,datasets:[{label:`Cumulative Reward (ε=${e.toFixed(2)})`,data:rewards,borderColor:chartColors.cyan,borderWidth:2,pointRadius:0,tension:.3,fill:{target:'origin',above:'rgba(139,92,246,0.05)'}}]},options:{responsive:true,plugins:{legend:{labels:{color:chartColors.gridText}},title:{display:true,text:`RL Training · ε=${e.toFixed(2)} (${Math.round(e*100)}% explore)`,color:chartColors.gridText,font:{family:'Space Grotesk',size:13}}},scales:{x:{...defaultAxes.x,title:{display:true,text:'Episode',color:chartColors.gridText}},y:{...defaultAxes.y,title:{display:true,text:'Cumulative Reward',color:chartColors.gridText}}}}};
     },
     position_sizing: () => {
-      const labels=[],pos=[],bg=[];
+      // the drawdown stop actually fires: when running DD breaches the threshold
+      // the position is cut to zero until equity recovers
+      const ddMax=CTRL.ddMax/100;
+      const labels=[],pos=[],ddSeries=[];
       const regimes=[0,0,0,1,1,1,1,2,2,1,1,0,0,0,0,2,2,2,0,0];
-      for(let i=0;i<100;i++){labels.push(i);const reg=regimes[Math.floor(i/5)%20];
-        pos.push(reg===0?0.8+0.15*Math.random():reg===1?0.5+0.1*Math.random():0.1+0.05*Math.random());
-        bg.push(reg);}
-      return {type:'line',data:{labels,datasets:[{label:'Position Size',data:pos,borderColor:chartColors.cyan,borderWidth:2,pointRadius:0,tension:.3,fill:{target:'origin',above:'rgba(139,92,246,0.08)'}}]},options:{responsive:true,plugins:{legend:{labels:{color:chartColors.gridText}},title:{display:true,text:'Dynamic Position Sizing Across Market Regimes',color:chartColors.gridText,font:{family:'Space Grotesk',size:13}}},scales:{x:{...defaultAxes.x,title:{display:true,text:'Time',color:chartColors.gridText}},y:{...defaultAxes.y,min:0,max:1,title:{display:true,text:'Position Weight',color:chartColors.gridText}}}}};
+      let eq=1,peak=1,cool=0,cut=0;
+      for(let i=0;i<100;i++){labels.push(i);
+        const reg=regimes[Math.floor(i/5)%20];
+        const base=reg===0?0.8+0.15*Math.random():reg===1?0.5+0.1*Math.random():0.1+0.05*Math.random();
+        if(cool>0){                               // flat while stopped out
+          cool--; if(cool===0) peak=eq;           // re-baseline, then resume
+          ddSeries.push(((peak-eq)/peak)*100); pos.push(0); continue;
+        }
+        const ret=(reg===2?-0.011:reg===1?0.002:0.005)+0.010*(Math.random()-.5);
+        eq*=1+ret; peak=Math.max(peak,eq);
+        const dd=(peak-eq)/peak; ddSeries.push(dd*100);
+        if(dd>ddMax){cool=8;cut++;pos.push(0);} else pos.push(base);}
+      return {type:'line',data:{labels,datasets:[
+        {label:'Position Size',data:pos,borderColor:chartColors.cyan,borderWidth:2,pointRadius:0,tension:.3,fill:{target:'origin',above:'rgba(139,92,246,0.08)'},yAxisID:'y'},
+        {label:`Drawdown % (stop ${CTRL.ddMax}%)`,data:ddSeries,borderColor:chartColors.pink,borderWidth:1.4,pointRadius:0,tension:.3,borderDash:[4,4],yAxisID:'y1'}
+      ]},options:{responsive:true,plugins:{legend:{labels:{color:chartColors.gridText}},title:{display:true,text:`Position Sizing · ${cut} bars stopped out at ${CTRL.ddMax}% drawdown`,color:chartColors.gridText,font:{family:'Space Grotesk',size:13}}},scales:{x:{...defaultAxes.x,title:{display:true,text:'Time',color:chartColors.gridText}},y:{...defaultAxes.y,min:0,max:1,title:{display:true,text:'Position Weight',color:chartColors.gridText}},y1:{position:'right',min:0,grid:{drawOnChartArea:false},ticks:{color:chartColors.gridText,font:{family:'JetBrains Mono',size:10}},title:{display:true,text:'Drawdown %',color:chartColors.gridText}}}}};
     },
     frontier: () => {
+      // toggling events changes the investable set: diversification pulls the
+      // frontier left (less risk for the same return) as n grows
+      const n=Math.max(1,Object.values(CTRL.events).filter(Boolean).length);
+      const div=1/Math.sqrt(n);                 // risk reduction from n events
       const risk=[],ret=[];
-      for(let i=0;i<30;i++){const r=2+i*0.8;risk.push(r);ret.push(1+0.6*r-0.005*r*r+2*Math.random());}
-      const ds=[{label:'Efficient Frontier',data:risk.map((r,i)=>({x:r,y:ret[i]})),borderColor:chartColors.cyan,borderWidth:2.5,pointRadius:3,pointBackgroundColor:chartColors.cyan,tension:.4,showLine:true,fill:false}];
-      for(let i=0;i<15;i++){ds.push({data:[{x:5+18*Math.random(),y:3+10*Math.random()}],borderColor:'rgba(255,255,255,0.15)',pointRadius:4,pointBackgroundColor:'rgba(255,255,255,0.1)',showLine:false,label:i===0?'Random Portfolios':''});}
-      return {type:'scatter',data:{datasets:ds},options:{responsive:true,plugins:{legend:{labels:{color:chartColors.gridText}},title:{display:true,text:'Event Contract Efficient Frontier',color:chartColors.gridText,font:{family:'Space Grotesk',size:13}}},scales:{x:{...defaultAxes.x,title:{display:true,text:'Risk (Vol %)',color:chartColors.gridText}},y:{...defaultAxes.y,title:{display:true,text:'Expected Return (%)',color:chartColors.gridText}}}}};
+      for(let i=0;i<30;i++){const r=(2+i*0.8)*div;risk.push(r);ret.push(1+0.6*(2+i*0.8)-0.005*Math.pow(2+i*0.8,2)+2*Math.random());}
+      const ds=[{label:`Efficient Frontier (${n} event${n>1?'s':''})`,data:risk.map((r,i)=>({x:r,y:ret[i]})),borderColor:chartColors.cyan,borderWidth:2.5,pointRadius:3,pointBackgroundColor:chartColors.cyan,tension:.4,showLine:true,fill:false}];
+      for(let i=0;i<15;i++){ds.push({data:[{x:(5+18*Math.random())*div,y:3+10*Math.random()}],borderColor:'rgba(255,255,255,0.15)',pointRadius:4,pointBackgroundColor:'rgba(255,255,255,0.1)',showLine:false,label:i===0?'Random Portfolios':''});}
+      return {type:'scatter',data:{datasets:ds},options:{responsive:true,plugins:{legend:{labels:{color:chartColors.gridText}},title:{display:true,text:`Event Contract Efficient Frontier · ${n} event${n>1?'s':''} selected`,color:chartColors.gridText,font:{family:'Space Grotesk',size:13}}},scales:{x:{...defaultAxes.x,min:0,max:24,title:{display:true,text:'Risk (Vol %)',color:chartColors.gridText}},y:{...defaultAxes.y,title:{display:true,text:'Expected Return (%)',color:chartColors.gridText}}}}};
     },
     hedge_pnl: () => {
+      // residual exposure by strategy: delta kills first-order, delta-gamma also
+      // neutralizes convexity, none leaves you fully exposed
+      const mode=CTRL.hedge;
+      const resid=mode==='none'?1:mode==='delta'?0.15:0.04;
+      const noise=mode==='delta-gamma'?0.22:0.5;
+      const label=mode==='none'?'Unhedged P&L':mode==='delta'?'Delta-Hedged P&L':'Delta-Gamma-Hedged P&L';
       const labels=[],hedged=[],unhedged=[];let h=0,u=0;
       for(let i=0;i<100;i++){labels.push(i);const shock=4*(Math.random()-.5);
-        u+=shock;h+=shock*0.15+0.5*(Math.random()-.5);hedged.push(h);unhedged.push(u);}
-      return {type:'line',data:{labels,datasets:[{label:'Unhedged P&L',data:unhedged,borderColor:chartColors.pink,borderWidth:2,pointRadius:0,tension:.3},{label:'Delta-Hedged P&L',data:hedged,borderColor:chartColors.cyan,borderWidth:2,pointRadius:0,tension:.3}]},options:{responsive:true,plugins:{legend:{labels:{color:chartColors.gridText}},title:{display:true,text:'Hedged vs Unhedged Portfolio P&L',color:chartColors.gridText,font:{family:'Space Grotesk',size:13}}},scales:{x:{...defaultAxes.x,title:{display:true,text:'Time',color:chartColors.gridText}},y:{...defaultAxes.y,title:{display:true,text:'Cumulative P&L',color:chartColors.gridText}}}}};
+        u+=shock;h+=shock*resid+noise*(Math.random()-.5);hedged.push(h);unhedged.push(u);}
+      const ds=[{label:'Unhedged P&L',data:unhedged,borderColor:chartColors.pink,borderWidth:2,pointRadius:0,tension:.3}];
+      if(mode!=='none')ds.push({label,data:hedged,borderColor:chartColors.cyan,borderWidth:2,pointRadius:0,tension:.3});
+      return {type:'line',data:{labels,datasets:ds},options:{responsive:true,plugins:{legend:{labels:{color:chartColors.gridText}},title:{display:true,text:`Portfolio P&L · ${mode==='none'?'no hedge':mode==='delta'?'delta hedge':'delta-gamma hedge'}`,color:chartColors.gridText,font:{family:'Space Grotesk',size:13}}},scales:{x:{...defaultAxes.x,title:{display:true,text:'Time',color:chartColors.gridText}},y:{...defaultAxes.y,title:{display:true,text:'Cumulative P&L',color:chartColors.gridText}}}}};
     },
     pinning_paths: () => {
       // Bridge-mixture simulation in logit space: L += (2x-1)·β₀²·dl + β₀·√dl·Z, dl = log((T-tᵢ)/(T-tᵢ₊₁))
@@ -912,11 +990,14 @@ function buildChart(type, canvas) {
     // one consistent eased draw-in for every chart: lines sweep left to right,
     // bars/points rise into place
     cfg.options = cfg.options || {};
-    cfg.options.animation = {duration:900, easing:'easeOutQuart'};
-    cfg.options.animations = Object.assign({
-      x:{type:'number',easing:'easeOutQuart',duration:900,from:NaN,delay(c){return c.type==='data'&&c.mode==='default'?c.dataIndex*1.4:0;}},
-      y:{type:'number',easing:'easeOutQuart',duration:900,from:(c)=>c.chart.scales.y?c.chart.scales.y.getPixelForValue(0):0}
-    }, cfg.options.animations||{});
+    const dur = animate === false ? 0 : 900;   // control-driven redraws are instant
+    cfg.options.animation = {duration:dur, easing:'easeOutQuart'};
+    if(dur){
+      cfg.options.animations = Object.assign({
+        x:{type:'number',easing:'easeOutQuart',duration:dur,from:NaN,delay(c){return c.type==='data'&&c.mode==='default'?c.dataIndex*1.4:0;}},
+        y:{type:'number',easing:'easeOutQuart',duration:dur,from:(c)=>c.chart.scales.y?c.chart.scales.y.getPixelForValue(0):0}
+      }, cfg.options.animations||{});
+    }
     activeChart = new Chart(ctx, cfg);
   }
 }
@@ -927,9 +1008,9 @@ function buildInteractive(type, container) {
     jacobi_sim: () => `
       <div class="ov-interactive-title">Jacobi Diffusion Simulator</div>
       <p style="color:var(--t2);font-size:.82rem;margin-bottom:16px">Adjust parameters and click "Simulate" to generate new sample paths.</p>
-      <div class="ov-slider-group"><label>Volatility σ <span id="sig-val">0.35</span></label><input type="range" min="5" max="80" value="35" id="sig-slider"></div>
-      <div class="ov-slider-group"><label>Initial P₀ <span id="p0-val">0.50</span></label><input type="range" min="5" max="95" value="50" id="p0-slider"></div>
-      <button class="ov-btn active" onclick="rerunJacobi()">Simulate New Paths</button>
+      <div class="ov-slider-group"><label>Volatility σ <span id="sig-val">0.35</span></label><input type="range" min="5" max="80" value="35" id="sig-slider" oninput="rerunJacobi(false)"></div>
+      <div class="ov-slider-group"><label>Initial P₀ <span id="p0-val">0.50</span></label><input type="range" min="5" max="95" value="50" id="p0-slider" oninput="rerunJacobi(false)"></div>
+      <button class="ov-btn active" onclick="rerunJacobi(true)">Simulate New Paths</button>
       <canvas id="sim-canvas" height="200" style="margin-top:16px;width:100%;border-radius:8px;background:transparent"></canvas>`,
     bvix_calc: () => `
       <div class="ov-interactive-title">BVIX Fair Strike Calculator</div>
@@ -973,26 +1054,26 @@ function buildInteractive(type, container) {
       <button class="ov-btn" onclick="fpReset()">Reset</button>`,
     cluster_k: () => `
       <div class="ov-interactive-title">Cluster Count Selector</div>
-      <div class="ov-slider-group"><label>Number of clusters K <span id="ck-val">3</span></label><input type="range" min="2" max="6" value="3" id="ck-slider" oninput="document.getElementById('ck-val').textContent=this.value"></div>
+      <div class="ov-slider-group"><label>Number of clusters K <span id="ck-val">${CTRL.k}</span></label><input type="range" min="2" max="6" value="${CTRL.k}" id="ck-slider" oninput="setK(this.value)"></div>
       <p style="color:var(--t2);font-size:.8rem">Adjust K and observe how regimes split or merge. The eigenvalues λ₁ ≤ λ₂ ≤ ... determine the optimal number of clusters via the eigengap heuristic.</p>`,
     lstm_horizon: () => `
       <div class="ov-interactive-title">Forecast Horizon Control</div>
-      <div class="ov-slider-group"><label>Forecast horizon Δ (days) <span id="lh-val">30</span></label><input type="range" min="5" max="90" value="30" id="lh-slider" oninput="document.getElementById('lh-val').textContent=this.value"></div>
+      <div class="ov-slider-group"><label>Forecast horizon Δ (days) <span id="lh-val">${CTRL.horizon}</span></label><input type="range" min="5" max="90" value="${CTRL.horizon}" id="lh-slider" oninput="setHorizon(this.value)"></div>
       <p style="color:var(--t2);font-size:.8rem">Longer horizons increase the confidence interval width. The network's uncertainty grows as √Δ due to the diffusion-like nature of volatility processes.</p>`,
     heston_params: () => `
       <div class="ov-interactive-title">Heston Parameter Explorer</div>
-      <div class="ov-slider-group"><label>Mean reversion κ <span id="hp-k">2.0</span></label><input type="range" min="5" max="80" value="20" id="hp-k-slider" oninput="document.getElementById('hp-k').textContent=(this.value/10).toFixed(1)"></div>
-      <div class="ov-slider-group"><label>Long-run var θ <span id="hp-t">0.04</span></label><input type="range" min="1" max="20" value="4" id="hp-t-slider" oninput="document.getElementById('hp-t').textContent=(this.value/100).toFixed(2)"></div>
-      <div class="ov-slider-group"><label>Vol-of-vol ξ <span id="hp-x">0.30</span></label><input type="range" min="5" max="80" value="30" id="hp-x-slider" oninput="document.getElementById('hp-x').textContent=(this.value/100).toFixed(2)"></div>
-      <div class="ov-slider-group"><label>Correlation ρ <span id="hp-r">-0.70</span></label><input type="range" min="-95" max="0" value="-70" id="hp-r-slider" oninput="document.getElementById('hp-r').textContent=(this.value/100).toFixed(2)"></div>`,
+      <div class="ov-slider-group"><label>Mean reversion κ <span id="hp-k">${CTRL.kappa.toFixed(1)}</span></label><input type="range" min="5" max="80" value="${CTRL.kappa*10}" id="hp-k-slider" oninput="setHeston('kappa',this.value/10,'hp-k',1)"></div>
+      <div class="ov-slider-group"><label>Long-run var θ <span id="hp-t">${CTRL.theta.toFixed(2)}</span></label><input type="range" min="1" max="20" value="${CTRL.theta*100}" id="hp-t-slider" oninput="setHeston('theta',this.value/100,'hp-t',2)"></div>
+      <div class="ov-slider-group"><label>Vol-of-vol ξ <span id="hp-x">${CTRL.xi.toFixed(2)}</span></label><input type="range" min="5" max="80" value="${CTRL.xi*100}" id="hp-x-slider" oninput="setHeston('xi',this.value/100,'hp-x',2)"></div>
+      <div class="ov-slider-group"><label>Correlation ρ <span id="hp-r">${CTRL.rho.toFixed(2)}</span></label><input type="range" min="-95" max="0" value="${CTRL.rho*100}" id="hp-r-slider" oninput="setHeston('rho',this.value/100,'hp-r',2)"></div>`,
     maxent_constraints: () => `
       <div class="ov-interactive-title">Moment Constraint Editor</div>
       <p style="color:var(--t2);font-size:.82rem;margin-bottom:12px">Each constraint narrows the maximum entropy distribution. More constraints → more informative pricing.</p>
-      <button class="ov-btn active" onclick="this.classList.toggle('active')">E[X] = 0.6 (Mean)</button>
-      <button class="ov-btn" onclick="this.classList.toggle('active')">E[X²] = 0.4 (Variance)</button>
-      <button class="ov-btn" onclick="this.classList.toggle('active')">E[X³] = 0.3 (Skew)</button>`,
+      <button class="ov-btn${CTRL.ent.m?' active':''}" onclick="toggleEnt('m',this)">E[X] = 0.6 (Mean)</button>
+      <button class="ov-btn${CTRL.ent.v?' active':''}" onclick="toggleEnt('v',this)">E[X²] = 0.4 (Variance)</button>
+      <button class="ov-btn${CTRL.ent.s?' active':''}" onclick="toggleEnt('s',this)">E[X³] = 0.3 (Skew)</button>`,
     regime_click: () => `
-      <div class="ov-interactive-title">Regime Transition Explorer</div>
+      <div class="ov-interactive-title">Regime Transition Matrix</div>
       <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:8px">
         <div style="padding:12px;border-radius:8px;background:rgba(139,92,246,.06);text-align:center"><div style="font-size:.65rem;color:var(--t3);font-family:var(--fm)">LOW VOL → LOW VOL</div><div style="color:var(--cyan);font-family:var(--fm);font-size:1.2rem;font-weight:700">0.85</div></div>
         <div style="padding:12px;border-radius:8px;background:rgba(167,139,250,.06);text-align:center"><div style="font-size:.65rem;color:var(--t3);font-family:var(--fm)">LOW VOL → TREND</div><div style="color:var(--purple);font-family:var(--fm);font-size:1.2rem;font-weight:700">0.10</div></div>
@@ -1007,15 +1088,15 @@ function buildInteractive(type, container) {
       </div>`,
     dps_dd: () => `
       <div class="ov-interactive-title">Drawdown Threshold Control</div>
-      <div class="ov-slider-group"><label>Max Drawdown Threshold <span id="dd-val">10%</span></label><input type="range" min="2" max="30" value="10" id="dd-slider" oninput="document.getElementById('dd-val').textContent=this.value+'%'"></div>
+      <div class="ov-slider-group"><label>Max Drawdown Threshold <span id="dd-val">${CTRL.ddMax}%</span></label><input type="range" min="2" max="30" value="${CTRL.ddMax}" id="dd-slider" oninput="setDD(this.value)"></div>
       <p style="color:var(--t2);font-size:.8rem">Lower thresholds trigger stops earlier, reducing tail risk but potentially cutting winning positions. The optimal threshold depends on the regime's self-transition probability.</p>`,
     frontier_events: () => `
       <div class="ov-interactive-title">Event Portfolio Builder</div>
       <p style="color:var(--t2);font-size:.82rem;margin-bottom:12px">Toggle events to see how the frontier shifts.</p>
-      <button class="ov-btn active" onclick="this.classList.toggle('active')">Fed Rate Decision</button>
-      <button class="ov-btn active" onclick="this.classList.toggle('active')">Election Outcome</button>
-      <button class="ov-btn" onclick="this.classList.toggle('active')">GDP Forecast</button>
-      <button class="ov-btn" onclick="this.classList.toggle('active')">Inflation Target</button>`,
+      <button class="ov-btn${CTRL.events.fed?' active':''}" onclick="toggleEvent('fed',this)">Fed Rate Decision</button>
+      <button class="ov-btn${CTRL.events.elec?' active':''}" onclick="toggleEvent('elec',this)">Election Outcome</button>
+      <button class="ov-btn${CTRL.events.gdp?' active':''}" onclick="toggleEvent('gdp',this)">GDP Forecast</button>
+      <button class="ov-btn${CTRL.events.infl?' active':''}" onclick="toggleEvent('infl',this)">Inflation Target</button>`,
     hedge_toggle: () => `
       <div class="ov-interactive-title">Hedging Strategy Comparison</div>
       <button class="ov-btn active" id="h-delta" onclick="setHedge('delta')">Delta Only</button>
@@ -1064,7 +1145,8 @@ function animateDraw(key,draw,dur){
 }
 animateDraw._h={};
 
-function rerunJacobi(){
+let jacobiNoise=null;
+function rerunJacobi(regen){
   const c=document.getElementById('sim-canvas');if(!c)return;
   const {ctx,w,h}=fitCanvas(c,200);
   const sig=document.getElementById('sig-slider').value/100;
@@ -1073,15 +1155,19 @@ function rerunJacobi(){
   document.getElementById('p0-val').textContent=p0.toFixed(2);
   const colors=['#8b5cf6','#5b8cf6','#a78bfa','#22c55e','#c99a5b'];
   const N=Math.max(160,Math.round(w));
-  const paths=colors.map(()=>{
+  // Reuse the same Brownian increments while sliders move, so dragging σ or P₀
+  // morphs the *same* paths instead of reshuffling them. The button redraws new ones.
+  if(regen!==false || !jacobiNoise || jacobiNoise[0].length!==N)
+    jacobiNoise=colors.map(()=>Array.from({length:N},()=>Math.random()-.5));
+  const paths=jacobiNoise.map(nz=>{
     const pts=[];let v=p0;
     for(let i=0;i<N;i++){
-      v+=sig*Math.sqrt(Math.max(.001,v*(1-v)))*(Math.random()-.5)*.3;
+      v+=sig*Math.sqrt(Math.max(.001,v*(1-v)))*nz[i]*.3;
       v=Math.max(.01,Math.min(.99,v));pts.push(v);
     }
     return pts;
   });
-  animateDraw('jacobi',frac=>{
+  const paint=frac=>{
     ctx.clearRect(0,0,w,h);
     ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
     ctx.beginPath();ctx.moveTo(0,.5);ctx.lineTo(w,.5);ctx.stroke();
@@ -1092,7 +1178,23 @@ function rerunJacobi(){
       for(let i=0;i<upto;i++){const x=i*(w/(N-1)),y=h*(1-pts[i]);i?ctx.lineTo(x,y):ctx.moveTo(x,y);}
       ctx.stroke();
     });
-  },850);
+  };
+  if(regen===false){                       // slider drag: track the cursor instantly
+    if(animateDraw._h.jacobi)cancelAnimationFrame(animateDraw._h.jacobi);
+    animateDraw._h.jacobi=null;paint(1);
+  } else animateDraw('jacobi',paint,850);   // first open / new paths: animate in
+}
+
+// ---- control handlers: each one updates CTRL, its readout, and the chart ----
+function setK(v){CTRL.k=+v;document.getElementById('ck-val').textContent=v;refreshChart();}
+function setHorizon(v){CTRL.horizon=+v;document.getElementById('lh-val').textContent=v;refreshChart();}
+function setHeston(key,val,elId,dp){CTRL[key]=+val;document.getElementById(elId).textContent=(+val).toFixed(dp);refreshChart();}
+function setDD(v){CTRL.ddMax=+v;document.getElementById('dd-val').textContent=v+'%';refreshChart();}
+function toggleEnt(key,btn){CTRL.ent[key]=!CTRL.ent[key];btn.classList.toggle('active',CTRL.ent[key]);refreshChart();}
+function toggleEvent(key,btn){
+  const on=!CTRL.events[key];
+  if(!on && Object.values(CTRL.events).filter(Boolean).length<=1) return;  // keep at least one
+  CTRL.events[key]=on;btn.classList.toggle('active',on);refreshChart();
 }
 
 function updateBVIX(){
@@ -1144,6 +1246,7 @@ function updateEpsilon(){
   document.getElementById('rl-e-val').textContent=(e/100).toFixed(2);
   document.getElementById('rl-exp-pct').textContent=e+'%';
   document.getElementById('rl-expl-pct').textContent=(100-e)+'%';
+  CTRL.eps=e/100;refreshChart();
 }
 
 function updateMargin(){
@@ -1161,6 +1264,7 @@ function setHedge(type){
   const info=document.getElementById('hedge-info');
   const msgs={delta:'Delta hedging removes first-order price risk but leaves gamma and vega exposure.','delta-gamma':'Delta-gamma hedging neutralizes both first and second-order risks, requiring more frequent rebalancing.',none:'No hedging: full exposure to directional, convexity, and volatility risk.'};
   info.textContent=msgs[type];
+  CTRL.hedge=type;refreshChart();
 }
 
 function updateBC(){
