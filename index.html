@@ -135,7 +135,16 @@ nav.scrolled{padding:12px 48px;background:rgba(8,7,13,.92)}
 .mr:hover{background:rgba(139,92,246,.04)}
 .ml{color:var(--t3);min-width:56px;font-size:.62rem;text-transform:uppercase;letter-spacing:.08em}
 .mv{color:var(--cyan);font-weight:500}
-.fc-content{display:flex;flex-direction:column;justify-content:center}
+.fc-content{display:flex;flex-direction:column;justify-content:center;padding:6px 4px}
+/* featured card breathes more than the small cards */
+.fc{gap:52px;padding:48px}
+.fc .pc-top{margin-bottom:26px}
+.fc h3{margin-bottom:18px;line-height:1.3}
+.fc .desc{font-size:.9rem;line-height:1.85;margin-bottom:30px}
+.fc .ts{gap:9px}
+.fc .chip{padding:6px 12px;font-size:.66rem}
+.mg{gap:10px;padding:32px}
+.mr{padding:13px 18px}
 .fc .click-hint{position:absolute;bottom:20px;right:24px;font-family:var(--fm);font-size:.6rem;color:var(--t3);opacity:0;transition:opacity .3s;display:flex;align-items:center;gap:4px}
 .fc:hover .click-hint{opacity:1}
 
@@ -900,6 +909,14 @@ function buildChart(type, canvas) {
   };
   if(builders[type]){
     const cfg = builders[type]();
+    // one consistent eased draw-in for every chart: lines sweep left to right,
+    // bars/points rise into place
+    cfg.options = cfg.options || {};
+    cfg.options.animation = {duration:900, easing:'easeOutQuart'};
+    cfg.options.animations = Object.assign({
+      x:{type:'number',easing:'easeOutQuart',duration:900,from:NaN,delay(c){return c.type==='data'&&c.mode==='default'?c.dataIndex*1.4:0;}},
+      y:{type:'number',easing:'easeOutQuart',duration:900,from:(c)=>c.chart.scales.y?c.chart.scales.y.getPixelForValue(0):0}
+    }, cfg.options.animations||{});
     activeChart = new Chart(ctx, cfg);
   }
 }
@@ -913,7 +930,7 @@ function buildInteractive(type, container) {
       <div class="ov-slider-group"><label>Volatility σ <span id="sig-val">0.35</span></label><input type="range" min="5" max="80" value="35" id="sig-slider"></div>
       <div class="ov-slider-group"><label>Initial P₀ <span id="p0-val">0.50</span></label><input type="range" min="5" max="95" value="50" id="p0-slider"></div>
       <button class="ov-btn active" onclick="rerunJacobi()">Simulate New Paths</button>
-      <canvas id="sim-canvas" height="200" style="margin-top:16px;width:100%;border-radius:8px;background:rgba(255,255,255,.02)"></canvas>`,
+      <canvas id="sim-canvas" height="200" style="margin-top:16px;width:100%;border-radius:8px;background:transparent"></canvas>`,
     bvix_calc: () => `
       <div class="ov-interactive-title">BVIX Fair Strike Calculator</div>
       <div class="ov-slider-group"><label>Current P₀ <span id="bvix-p">0.60</span></label><input type="range" min="5" max="95" value="60" id="bvix-p-slider" oninput="updateBVIX()"></div>
@@ -926,7 +943,7 @@ function buildInteractive(type, container) {
       <div class="ov-interactive-title">Bonding Curve Shape Explorer</div>
       <div class="ov-slider-group"><label>α parameter <span id="bc-a-val">2.0</span></label><input type="range" min="5" max="50" value="20" id="bc-a" oninput="updateBC()"></div>
       <div class="ov-slider-group"><label>β parameter <span id="bc-b-val">2.0</span></label><input type="range" min="5" max="50" value="20" id="bc-b" oninput="updateBC()"></div>
-      <canvas id="bc-canvas" height="180" style="margin-top:12px;width:100%;border-radius:8px;background:rgba(255,255,255,.02)"></canvas>`,
+      <canvas id="bc-canvas" height="180" style="margin-top:12px;width:100%;border-radius:8px;background:transparent"></canvas>`,
     greeks_calc: () => `
       <div class="ov-interactive-title">Greeks Calculator</div>
       <div class="ov-slider-group"><label>Current P <span id="gc-p">0.55</span></label><input type="range" min="5" max="95" value="55" id="gc-p-slider" oninput="updateGreeksCalc()"></div>
@@ -1020,30 +1037,62 @@ function buildInteractive(type, container) {
 }
 
 // ===================== INTERACTIVE HANDLERS =====================
+// Size a canvas to the device pixel ratio so strokes stay crisp on retina,
+// and run an eased draw-in. Falls back to a full draw if rAF is throttled.
+function fitCanvas(c,cssH){
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  const w=c.offsetWidth||600;
+  c.style.height=cssH+'px';
+  c.width=Math.round(w*dpr);c.height=Math.round(cssH*dpr);
+  const ctx=c.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.lineJoin='round';ctx.lineCap='round';
+  return {ctx,w,h:cssH};
+}
+function animateDraw(key,draw,dur){
+  if(animateDraw._h[key])cancelAnimationFrame(animateDraw._h[key]);
+  const t0=performance.now();let fired=false;
+  const step=now=>{
+    fired=true;
+    const k=Math.min(1,(now-t0)/(dur||800));
+    draw(1-Math.pow(1-k,3));                 // easeOutCubic
+    animateDraw._h[key]=k<1?requestAnimationFrame(step):null;
+  };
+  draw(0.02);
+  animateDraw._h[key]=requestAnimationFrame(step);
+  setTimeout(()=>{if(!fired)draw(1);},450);  // rAF frozen (bg tab): show it anyway
+}
+animateDraw._h={};
+
 function rerunJacobi(){
   const c=document.getElementById('sim-canvas');if(!c)return;
-  const ctx=c.getContext('2d');c.width=c.offsetWidth;c.height=200;
-  ctx.clearRect(0,0,c.width,c.height);
+  const {ctx,w,h}=fitCanvas(c,200);
   const sig=document.getElementById('sig-slider').value/100;
   const p0=document.getElementById('p0-slider').value/100;
   document.getElementById('sig-val').textContent=sig.toFixed(2);
   document.getElementById('p0-val').textContent=p0.toFixed(2);
   const colors=['#8b5cf6','#5b8cf6','#a78bfa','#22c55e','#c99a5b'];
-  for(let p=0;p<5;p++){
-    ctx.beginPath();ctx.strokeStyle=colors[p];ctx.lineWidth=1.5;
-    let v=p0;ctx.moveTo(0,c.height*(1-v));
-    for(let i=1;i<c.width;i++){
+  const N=Math.max(160,Math.round(w));
+  const paths=colors.map(()=>{
+    const pts=[];let v=p0;
+    for(let i=0;i<N;i++){
       v+=sig*Math.sqrt(Math.max(.001,v*(1-v)))*(Math.random()-.5)*.3;
-      v=Math.max(.01,Math.min(.99,v));
-      ctx.lineTo(i,c.height*(1-v));
+      v=Math.max(.01,Math.min(.99,v));pts.push(v);
     }
-    ctx.stroke();
-  }
-  // Draw bounds
-  ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.setLineDash([4,4]);
-  ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(c.width,0);ctx.stroke();
-  ctx.beginPath();ctx.moveTo(0,c.height);ctx.lineTo(c.width,c.height);ctx.stroke();
-  ctx.setLineDash([]);
+    return pts;
+  });
+  animateDraw('jacobi',frac=>{
+    ctx.clearRect(0,0,w,h);
+    ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(0,.5);ctx.lineTo(w,.5);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,h-.5);ctx.lineTo(w,h-.5);ctx.stroke();
+    const upto=Math.max(2,Math.floor(N*frac));
+    paths.forEach((pts,pi)=>{
+      ctx.beginPath();ctx.strokeStyle=colors[pi];ctx.lineWidth=1.4;
+      for(let i=0;i<upto;i++){const x=i*(w/(N-1)),y=h*(1-pts[i]);i?ctx.lineTo(x,y):ctx.moveTo(x,y);}
+      ctx.stroke();
+    });
+  },850);
 }
 
 function updateBVIX(){
@@ -1120,13 +1169,27 @@ function updateBC(){
   document.getElementById('bc-a-val').textContent=a.toFixed(1);
   document.getElementById('bc-b-val').textContent=b.toFixed(1);
   const c=document.getElementById('bc-canvas');if(!c)return;
-  const ctx=c.getContext('2d');c.width=c.offsetWidth;c.height=180;
-  ctx.clearRect(0,0,c.width,c.height);
-  ctx.beginPath();ctx.strokeStyle='#8b5cf6';ctx.lineWidth=2;
+  const {ctx,w,h}=fitCanvas(c,180);
+  const N=Math.max(160,Math.round(w));
   let maxY=0;const vals=[];
-  for(let i=1;i<c.width;i++){const x=i/c.width;const y=Math.pow(x,a-1)*Math.pow(1-x,b-1);vals.push(y);maxY=Math.max(maxY,y);}
-  vals.forEach((y,i)=>{const px=i+1;const py=c.height-10-(y/maxY)*(c.height-20);i===0?ctx.moveTo(px,py):ctx.lineTo(px,py);});
-  ctx.stroke();
+  for(let i=1;i<=N;i++){const x=i/(N+1);const y=Math.pow(x,a-1)*Math.pow(1-x,b-1);vals.push(y);maxY=Math.max(maxY,y);}
+  animateDraw('bc',frac=>{
+    ctx.clearRect(0,0,w,h);
+    ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
+    ctx.beginPath();ctx.moveTo(0,h-.5);ctx.lineTo(w,h-.5);ctx.stroke();
+    const upto=Math.max(2,Math.floor(vals.length*frac));
+    // area under the curve, then the stroke
+    ctx.beginPath();
+    for(let i=0;i<upto;i++){const px=i*(w/(vals.length-1)),py=h-10-(vals[i]/maxY)*(h-24);i?ctx.lineTo(px,py):ctx.moveTo(px,py);}
+    const lastX=(upto-1)*(w/(vals.length-1));
+    ctx.lineTo(lastX,h);ctx.lineTo(0,h);ctx.closePath();
+    const g=ctx.createLinearGradient(0,0,0,h);
+    g.addColorStop(0,'rgba(139,92,246,.18)');g.addColorStop(1,'rgba(139,92,246,0)');
+    ctx.fillStyle=g;ctx.fill();
+    ctx.beginPath();ctx.strokeStyle='#8b5cf6';ctx.lineWidth=2;
+    for(let i=0;i<upto;i++){const px=i*(w/(vals.length-1)),py=h-10-(vals[i]/maxY)*(h-24);i?ctx.lineTo(px,py):ctx.moveTo(px,py);}
+    ctx.stroke();
+  },750);
 }
 
 // ===================== OVERLAY SYSTEM =====================
