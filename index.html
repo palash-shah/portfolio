@@ -26,13 +26,14 @@ body{font-family:var(--fb);background:var(--bg);color:var(--t1);line-height:1.6;
 ::selection{background:rgba(139,92,246,.30);color:#fff}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(139,92,246,.22);border-radius:2px}
 a{color:inherit;text-decoration:none}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .container{max-width:1080px;margin:0 auto;padding:0 40px;position:relative}
 
 /* NAV */
 nav{position:fixed;inset:0 0 auto 0;z-index:100;display:flex;justify-content:space-between;align-items:center;
-  padding:18px 40px;background:rgba(8,7,13,.72);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
-  border-bottom:1px solid var(--bdr);transition:padding .3s var(--ease),background .3s var(--ease)}
-nav.scrolled{padding:12px 40px;background:rgba(8,7,13,.92)}
+  padding:18px 40px;background:rgba(8,7,13,.55);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-bottom:1px solid transparent;transition:padding .3s var(--ease),background .3s var(--ease),border-color .3s}
+nav.scrolled{padding:12px 40px;background:rgba(8,7,13,.92);border-bottom-color:var(--bdr)}
 .logo{font-weight:700;letter-spacing:-.01em;font-size:1.05rem}
 .nav-links{display:flex;gap:30px;align-items:center}
 .nav-links a{color:var(--t2);font-size:.85rem;font-weight:500;transition:color .2s}
@@ -40,26 +41,21 @@ nav.scrolled{padding:12px 40px;background:rgba(8,7,13,.92)}
 .nav-cta{padding:7px 16px;border-radius:8px;background:rgba(139,92,246,.12);border:1px solid rgba(139,92,246,.3);color:var(--violet2)!important}
 .nav-cta:hover{background:rgba(139,92,246,.2);color:#c4b5fd!important}
 
-/* HERO */
-.hero{min-height:100vh;min-height:100svh;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;padding:120px 40px 80px;max-width:1160px;margin:0 auto}
-.hero-eyebrow{display:inline-flex;align-items:center;gap:9px;font-family:var(--fm);font-size:.72rem;letter-spacing:.04em;color:var(--violet2);margin-bottom:24px}
-.hero-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--violet);box-shadow:0 0 10px rgba(139,92,246,.8);animation:pulse 1.8s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.hero h1{font-size:clamp(2.6rem,5.4vw,4rem);font-weight:700;letter-spacing:-.035em;line-height:1.02;margin-bottom:22px}
-.hero h1 span{color:var(--violet2)}
-.hero p{color:var(--t2);font-size:1.05rem;line-height:1.75;max-width:30em;margin-bottom:34px}
-.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:10px;font-size:.9rem;font-weight:600;transition:all .2s;border:1px solid transparent}
-.btn-p{background:var(--violet);color:#0b0713}.btn-p:hover{background:var(--violet2);transform:translateY(-1px)}
-.btn-g{background:transparent;border-color:var(--bdr);color:var(--t1)}.btn-g:hover{border-color:var(--bdr-h);background:var(--card-h)}
-
-/* CALIBRATION PANEL */
-.calib{border:1px solid var(--bdr);border-radius:var(--r-lg);background:var(--card);overflow:hidden}
-.calib-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bdr);font-family:var(--fm);font-size:.66rem}
-.calib-head .lbl{color:var(--violet2);font-weight:700;letter-spacing:.12em}
-.calib-head .sub{color:var(--t3)}
-#calibCanvas{display:block;width:100%;height:300px}
-.calib-foot{padding:11px 18px;border-top:1px solid var(--bdr);font-family:var(--fm);font-size:.62rem;color:var(--t3);text-align:center}
+/* FULL-SCREEN HERO */
+.hero{position:relative;height:100vh;height:100svh;min-height:560px;overflow:hidden}
+#heroCanvas{position:absolute;inset:0;width:100%;height:100%;display:block;cursor:crosshair}
+.hero-badge{position:absolute;top:100px;left:40px;z-index:3;display:flex;align-items:center;gap:9px;
+  font-family:var(--fm);font-size:.7rem;font-weight:700;letter-spacing:.16em;color:var(--violet2);pointer-events:none;
+  animation:fade .9s ease .2s both}
+.hero-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--violet);box-shadow:0 0 10px rgba(139,92,246,.85);animation:pulse 1.7s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+.hero-cap{position:absolute;bottom:34px;right:40px;z-index:3;font-family:var(--fm);font-size:.7rem;color:var(--t3);pointer-events:none;animation:fade .9s ease .35s both}
+.hero-cap b{color:var(--t2);font-weight:600}
+.hero-hint{position:absolute;bottom:34px;left:40px;z-index:3;font-family:var(--fm);font-size:.66rem;color:var(--t3);pointer-events:none;animation:fade .9s ease .5s both}
+.hero-scroll{position:absolute;bottom:22px;left:50%;transform:translateX(-50%);z-index:3;width:1px;height:46px;
+  background:linear-gradient(to bottom,var(--violet),transparent);opacity:.5;pointer-events:none}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media(max-width:640px){.hero-badge{left:24px;top:88px}.hero-cap,.hero-hint{display:none}}
 
 /* SECTIONS */
 section{padding:100px 0;position:relative}
@@ -68,13 +64,12 @@ section{padding:100px 0;position:relative}
 .s-lede{color:var(--t2);font-size:1.02rem;line-height:1.8;max-width:44em}
 .s-lede + .s-lede{margin-top:16px}
 .hl{color:var(--t1);font-weight:600}
-
 .divider{height:1px;background:linear-gradient(to right,transparent,var(--bdr),transparent);max-width:520px;margin:0 auto}
 
 /* WORK CARDS */
 .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:44px}
-.card{padding:28px;border-radius:var(--r-md);background:var(--card);border:1px solid var(--bdr);transition:border-color .25s,background .25s}
-.card:hover{border-color:var(--bdr-h);background:var(--card-h)}
+.card{padding:28px;border-radius:var(--r-md);background:var(--card);border:1px solid var(--bdr);transition:border-color .25s,background .25s,transform .25s}
+.card:hover{border-color:var(--bdr-h);background:var(--card-h);transform:translateY(-3px)}
 .card .tag{display:inline-block;font-family:var(--fm);font-size:.62rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--violet2);background:rgba(139,92,246,.08);padding:4px 10px;border-radius:6px;margin-bottom:16px}
 .card h3{font-size:1.15rem;font-weight:600;letter-spacing:-.01em;margin-bottom:10px}
 .card p{color:var(--t2);font-size:.9rem;line-height:1.7;margin-bottom:18px}
@@ -94,21 +89,18 @@ section{padding:100px 0;position:relative}
 .contact h2{font-size:clamp(1.8rem,3.4vw,2.4rem);font-weight:700;letter-spacing:-.03em;margin-bottom:14px}
 .contact p{color:var(--t2);max-width:34em;margin:0 auto 30px;line-height:1.75}
 .contact-links{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 22px;border-radius:10px;font-size:.9rem;font-weight:600;transition:all .2s;border:1px solid transparent}
+.btn-p{background:var(--violet);color:#0b0713}.btn-p:hover{background:var(--violet2);transform:translateY(-1px)}
+.btn-g{background:transparent;border-color:var(--bdr);color:var(--t1)}.btn-g:hover{border-color:var(--bdr-h);background:var(--card-h)}
 .copyright{margin-top:56px;font-family:var(--fm);font-size:.68rem;color:var(--t3)}
 
 /* REVEAL */
 .rv{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
 .rv.vis{opacity:1;transform:none}
 
-@media(max-width:900px){
-  .hero{grid-template-columns:1fr;gap:40px;min-height:auto;padding:130px 40px 70px}
-  .calib{order:2}
-  .cards{grid-template-columns:1fr}
-  .skills{grid-template-columns:1fr 1fr}
-}
+@media(max-width:900px){.cards{grid-template-columns:1fr}.skills{grid-template-columns:1fr 1fr}}
 @media(max-width:640px){
   .container,nav,.contact{padding-left:24px;padding-right:24px}
-  .hero{padding:120px 24px 60px}
   .nav-links{gap:18px}.nav-links a:not(.nav-cta){display:none}
   .skills{grid-template-columns:1fr}
 }
@@ -126,25 +118,14 @@ section{padding:100px 0;position:relative}
   </div>
 </nav>
 
-<!-- HERO -->
+<!-- FULL-SCREEN CALIBRATION HERO -->
 <header class="hero">
-  <div class="hero-copy">
-    <div class="hero-eyebrow"><span class="dot"></span>Forecasting &amp; machine learning</div>
-    <h1>Turning noisy signals into <span>calibrated forecasts.</span></h1>
-    <p>I'm Palash Shah, a student at Carnegie Mellon University. I compete in Metaculus forecasting tournaments and build autonomous systems that read the news and turn it into probability forecasts that are actually well-calibrated.</p>
-    <div class="hero-actions">
-      <a href="#work" class="btn btn-p">See the work &rarr;</a>
-      <a href="#contact" class="btn btn-g">Get in touch</a>
-    </div>
-  </div>
-  <div class="calib" id="calibPanel">
-    <div class="calib-head">
-      <span class="lbl">CALIBRATION</span>
-      <span class="sub">forecast vs. outcome</span>
-    </div>
-    <canvas id="calibCanvas"></canvas>
-    <div class="calib-foot">a well-calibrated forecaster: things called 70% happen ~70% of the time</div>
-  </div>
+  <canvas id="heroCanvas" aria-hidden="true"></canvas>
+  <h1 class="sr-only">Palash Shah — forecasting and machine learning. Metaculus tournaments and autonomous, well-calibrated forecasting systems.</h1>
+  <div class="hero-badge"><span class="dot"></span>LIVE CALIBRATION</div>
+  <div class="hero-hint">hover a column &middot; click to forecast</div>
+  <div class="hero-cap">predicted probability vs. <b>observed frequency</b></div>
+  <div class="hero-scroll"></div>
 </header>
 
 <!-- ABOUT -->
@@ -152,10 +133,9 @@ section{padding:100px 0;position:relative}
   <div class="container">
     <div class="rv">
       <div class="s-label">About</div>
-      <h2 class="s-title">I like being right on purpose, not by luck.</h2>
-      <p class="s-lede">Good forecasting is a craft: break a question down, weigh the evidence honestly, and put a number on it you're willing to be scored against. I got hooked on that discipline through <span class="hl">Metaculus forecasting tournaments</span>, where every prediction eventually meets reality and your track record is the only thing that talks.</p>
+      <h2 class="s-title">Turning noisy signals into calibrated forecasts.</h2>
+      <p class="s-lede">I'm <span class="hl">Palash Shah</span>, a student at Carnegie Mellon University. Good forecasting is a craft: break a question down, weigh the evidence honestly, and put a number on it you're willing to be scored against. I got hooked on that discipline through <span class="hl">Metaculus forecasting tournaments</span>, where every prediction eventually meets reality and your track record is the only thing that talks.</p>
       <p class="s-lede">Most of my work sits where <span class="hl">machine learning meets human judgment</span>: systems that ingest news and data, aggregate many weak signals into one estimate, and stay honest about their own uncertainty. I care as much about a forecast being <span class="hl">calibrated</span> as about it being sharp &mdash; a confident wrong answer is worse than an honest maybe.</p>
-      <p class="s-lede">I study at Carnegie Mellon, and I spend my time on the parts of applied ML, probability, and decision-making that make forecasts more trustworthy.</p>
     </div>
   </div>
 </section>
@@ -240,73 +220,160 @@ addEventListener('scroll',()=>document.getElementById('nav').classList.toggle('s
 const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('vis');io.unobserve(e.target);}}),{threshold:.12,rootMargin:'0px 0px -40px 0px'});
 document.querySelectorAll('.rv').forEach(el=>io.observe(el));
 
-// ===== Calibration reliability diagram (hero) =====
-// Pure forecasting visual: predicted probability (x) vs observed frequency (y).
-// Points cluster along the y=x diagonal — the picture of a calibrated forecaster.
+// ===== Full-screen LIVE calibration field =====
+// Forecasts stream in and settle onto a reliability curve: x = predicted
+// probability, y = observed frequency. A calibrated forecaster's points hug the
+// diagonal (things called 70% happen ~70% of the time). Hover a column to read
+// it; click to drop a burst of forecasts. Pure forecasting — nothing proprietary.
 (function(){
-  const cv=document.getElementById('calibCanvas');if(!cv)return;
+  const cv=document.getElementById('heroCanvas');if(!cv)return;
   const ctx=cv.getContext('2d');
   const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const DPR=Math.min(2,window.devicePixelRatio||1);
-  let W=0,H=0,pts=[],t0=0,raf=null;
-  const PAD={l:44,r:18,t:18,b:38};
-  function sample(){
-    pts=[];
-    for(let i=0;i<10;i++){
-      const p=(i+0.5)/10;
-      const n=6+Math.round(Math.random()*10);           // "sample size" -> dot radius
-      const obs=Math.max(.02,Math.min(.98,p+(Math.random()-.5)*0.13));
-      pts.push({p,obs,n});
+  const B=11;                                  // probability columns
+  let W=0,H=0,PAD={l:0,r:0,t:0,b:0},bins=[],flies=[],brier=0.18,resolved=0;
+  let mx=-1,my=-1,inside=false,lastT=0,acc=0,raf=null;
+
+  function initBins(){
+    bins=[];
+    for(let i=0;i<B;i++){
+      const p=i/(B-1);
+      bins.push({p, obs:p, n:14+((i*7)%9), succ:0, cnt:0});
     }
+    // seed each column with a calibrated-ish observed frequency
+    bins.forEach(b=>{ b.obs=Math.max(.03,Math.min(.97, b.p+(Math.random()-.5)*0.10)); });
   }
-  function size(){
+  function layout(){
     const w=cv.offsetWidth,h=cv.offsetHeight;
-    if(!w){setTimeout(size,250);return;}
+    if(!w){setTimeout(layout,250);return;}
     W=w;H=h;cv.width=Math.round(w*DPR);cv.height=Math.round(h*DPR);
     ctx.setTransform(DPR,0,0,DPR,0,0);ctx.lineJoin='round';ctx.lineCap='round';
+    const m=Math.min(W,H);
+    PAD={l:Math.max(64,W*0.13), r:Math.max(48,W*0.10), t:Math.max(120,H*0.16), b:Math.max(78,H*0.16)};
+    if(!bins.length)initBins();
   }
   const X=p=>PAD.l+p*(W-PAD.l-PAD.r);
   const Y=v=>H-PAD.b-v*(H-PAD.t-PAD.b);
-  function draw(k){
+  const rnd=(a,b)=>a+Math.random()*(b-a);
+
+  function spawn(bi){
+    const b=bins[bi];
+    // an incoming forecast at predicted prob ~ column p; it will "resolve"
+    const p=b.p, outcome=Math.random()<Math.max(.02,Math.min(.98,p))?1:0;
+    flies.push({bi, x:X(p)+rnd(-14,14), y:Y(1)+rnd(-40,10), tx:X(p), ty:Y(b.obs), life:0, outcome});
+    if(flies.length>90)flies.splice(0,flies.length-90);
+  }
+  function resolveInto(f){
+    const b=bins[f.bi];
+    b.cnt++; b.succ+=f.outcome; b.n=Math.min(60,b.n+1);
+    // observed frequency drifts toward the running success rate (calibrated)
+    const rate=b.succ/b.cnt, target=0.72*b.p+0.28*rate;   // stays near diagonal, gentle noise
+    b.obs=b.obs+(Math.max(.03,Math.min(.97,target+(Math.random()-.5)*0.04))-b.obs)*0.5;
+    resolved++;
+    brier+= ((f.outcome-b.p)*(f.outcome-b.p)-brier)*0.03;   // EMA Brier score
+  }
+
+  function draw(){
     ctx.clearRect(0,0,W,H);
-    ctx.strokeStyle='rgba(255,255,255,.045)';ctx.lineWidth=1;ctx.fillStyle='rgba(255,255,255,.28)';
-    ctx.font='10px "SF Mono",ui-monospace,monospace';
+    const nearBin=inside?Math.max(0,Math.min(B-1,Math.round((mx-PAD.l)/((W-PAD.l-PAD.r))*(B-1)))):-1;
+
+    // big faint stat in the empty top-left triangle
+    ctx.textAlign='left';ctx.textBaseline='alphabetic';
+    ctx.fillStyle='rgba(255,255,255,.04)';
+    ctx.font='700 '+Math.min(150,W*0.11)+'px '+getComputedStyle(document.body).fontFamily;
+    ctx.fillText(brier.toFixed(3), PAD.l-8, Y(1)+Math.min(150,W*0.11)*0.86);
+    ctx.fillStyle='rgba(255,255,255,.09)';ctx.font='600 12px var(--fm),monospace';
+    ctx.font='600 12px "SF Mono",ui-monospace,monospace';
+    ctx.fillText('BRIER SCORE · '+resolved.toLocaleString()+' RESOLVED', PAD.l-6, Y(1)+Math.min(150,W*0.11)*0.86+22);
+
+    // grid
+    ctx.strokeStyle='rgba(255,255,255,.05)';ctx.lineWidth=1;
+    ctx.fillStyle='rgba(255,255,255,.26)';ctx.font='11px "SF Mono",ui-monospace,monospace';
     for(let i=0;i<=5;i++){
       const g=i/5;
       ctx.beginPath();ctx.moveTo(X(0),Y(g));ctx.lineTo(X(1),Y(g));ctx.stroke();
-      ctx.textAlign='right';ctx.textBaseline='middle';ctx.fillText(g.toFixed(1),PAD.l-8,Y(g));
-      ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText(g.toFixed(1),X(g),H-PAD.b+8);
+      ctx.textAlign='right';ctx.textBaseline='middle';ctx.fillText(g.toFixed(1),X(0)-12,Y(g));
+      ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText(g.toFixed(1),X(g),Y(0)+12);
     }
-    ctx.strokeStyle='rgba(255,255,255,.22)';ctx.setLineDash([4,5]);ctx.lineWidth=1.2;
-    ctx.beginPath();ctx.moveTo(X(0),Y(0));ctx.lineTo(X(1),Y(1));ctx.stroke();ctx.setLineDash([]);
-    ctx.fillStyle='rgba(255,255,255,.4)';ctx.font='10px "SF Mono",ui-monospace,monospace';
+    // axis titles
+    ctx.fillStyle='rgba(255,255,255,.4)';ctx.font='12px "SF Mono",ui-monospace,monospace';
     ctx.textAlign='center';ctx.textBaseline='alphabetic';
-    ctx.fillText('predicted probability',(X(0)+X(1))/2,H-6);
-    ctx.save();ctx.translate(13,(Y(0)+Y(1))/2);ctx.rotate(-Math.PI/2);ctx.fillText('observed frequency',0,0);ctx.restore();
-    const upto=Math.max(1,Math.floor(pts.length*k));
-    ctx.strokeStyle='rgba(139,92,246,.5)';ctx.lineWidth=2;ctx.beginPath();
-    for(let i=0;i<upto;i++){const x=X(pts[i].p),y=Y(pts[i].obs*k+pts[i].p*(1-k));i?ctx.lineTo(x,y):ctx.moveTo(x,y);}
-    ctx.stroke();
-    for(let i=0;i<upto;i++){
-      const pt=pts[i],x=X(pt.p),y=Y(pt.obs*k+pt.p*(1-k)),r=3+pt.n*0.25;
-      ctx.beginPath();ctx.fillStyle='rgba(139,92,246,.16)';ctx.arc(x,y,r+3,0,7);ctx.fill();
-      ctx.beginPath();ctx.fillStyle='#8b5cf6';ctx.shadowColor='#8b5cf6';ctx.shadowBlur=8;ctx.arc(x,y,r,0,7);ctx.fill();ctx.shadowBlur=0;
+    ctx.fillText('predicted probability',(X(0)+X(1))/2,Y(0)+42);
+    ctx.save();ctx.translate(X(0)-46,(Y(0)+Y(1))/2);ctx.rotate(-Math.PI/2);ctx.fillText('observed frequency',0,0);ctx.restore();
+
+    // perfect-calibration diagonal
+    ctx.strokeStyle='rgba(255,255,255,.20)';ctx.setLineDash([5,6]);ctx.lineWidth=1.3;
+    ctx.beginPath();ctx.moveTo(X(0),Y(0));ctx.lineTo(X(1),Y(1));ctx.stroke();ctx.setLineDash([]);
+
+    // hover column highlight
+    if(nearBin>=0){
+      const b=bins[nearBin];
+      ctx.strokeStyle='rgba(139,92,246,.28)';ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(X(b.p),Y(0));ctx.lineTo(X(b.p),Y(1));ctx.stroke();
+      const lx=X(b.p),ly=Y(b.obs);
+      ctx.fillStyle='rgba(8,7,13,.9)';ctx.strokeStyle='rgba(139,92,246,.4)';
+      const txt='p '+b.p.toFixed(2)+'  →  obs '+b.obs.toFixed(2);
+      ctx.font='11px "SF Mono",ui-monospace,monospace';const tw=ctx.measureText(txt).width+18;
+      const bx=Math.min(W-tw-10,Math.max(10,lx-tw/2)),by=ly-40;
+      ctx.beginPath();ctx.roundRect(bx,by,tw,26,7);ctx.fill();ctx.stroke();
+      ctx.fillStyle='#c4b5fd';ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText(txt,bx+9,by+13);
     }
+
+    // reliability curve through the column points
+    const grad=ctx.createLinearGradient(X(0),0,X(1),0);
+    grad.addColorStop(0,'#5b8cf6');grad.addColorStop(1,'#a78bfa');
+    ctx.strokeStyle=grad;ctx.lineWidth=2.5;ctx.shadowColor='rgba(139,92,246,.6)';ctx.shadowBlur=10;
+    ctx.beginPath();
+    bins.forEach((b,i)=>{const x=X(b.p),y=Y(b.obs);i?ctx.lineTo(x,y):ctx.moveTo(x,y);});
+    ctx.stroke();ctx.shadowBlur=0;
+
+    // flying forecasts (incoming) — faint, colored by outcome
+    flies.forEach(f=>{
+      const a=Math.min(1,f.life*2)*(1-Math.max(0,(f.life-0.6)/0.4));
+      ctx.globalAlpha=Math.max(0,a)*0.7;
+      ctx.fillStyle=f.outcome?'rgba(34,197,94,.9)':'rgba(139,92,246,.7)';
+      ctx.beginPath();ctx.arc(f.x,f.y,2.4,0,7);ctx.fill();
+    });
+    ctx.globalAlpha=1;
+
+    // settled column dots (size ~ sample count)
+    bins.forEach((b,i)=>{
+      const x=X(b.p),y=Y(b.obs),r=3.2+Math.min(9,b.n*0.16),hot=i===nearBin;
+      ctx.beginPath();ctx.fillStyle='rgba(139,92,246,.14)';ctx.arc(x,y,r+4,0,7);ctx.fill();
+      ctx.beginPath();ctx.fillStyle=hot?'#c4b5fd':'#8b5cf6';
+      ctx.shadowColor='#8b5cf6';ctx.shadowBlur=hot?16:7;ctx.arc(x,y,r,0,7);ctx.fill();ctx.shadowBlur=0;
+    });
   }
-  function anim(now){
-    if(document.visibilityState!=='visible'){raf=requestAnimationFrame(anim);return;}
-    const k=Math.min(1,(now-t0)/900);draw(1-Math.pow(1-k,3));
-    if(k<1)raf=requestAnimationFrame(anim);
+
+  function frame(now){
+    if(document.visibilityState==='visible'){
+      const dt=Math.min(0.05,(now-lastT)/1000);lastT=now;acc+=dt;
+      // spawn ~7 forecasts / sec
+      if(Math.random()<dt*7)spawn(Math.floor(Math.random()*B));
+      for(let i=flies.length-1;i>=0;i--){
+        const f=flies[i];f.life+=dt*1.3;
+        const e=Math.min(1,f.life);f.x+=(f.tx-f.x)*Math.min(1,dt*6);f.y+=(f.ty-f.y)*Math.min(1,dt*6);
+        if(f.life>0.55 && !f.done){f.done=true;resolveInto(f);}
+        if(f.life>1)flies.splice(i,1);
+      }
+      draw();
+    }
+    raf=requestAnimationFrame(frame);
   }
-  function run(){t0=performance.now();if(raf)cancelAnimationFrame(raf);
-    if(reduced){draw(1);return;}
-    raf=requestAnimationFrame(anim);setTimeout(()=>{if(!raf)draw(1);},500);
-  }
-  size();sample();run();
-  addEventListener('resize',()=>{size();draw(1);});
-  cv.style.cursor='pointer';
-  cv.addEventListener('click',()=>{sample();run();});
-  if(!reduced)setInterval(()=>{sample();run();},6000);
+
+  layout();draw();
+  addEventListener('resize',()=>{layout();draw();});
+  const setM=(x,y)=>{const r=cv.getBoundingClientRect();mx=x-r.left;my=y-r.top;inside=true;};
+  cv.addEventListener('mousemove',e=>setM(e.clientX,e.clientY));
+  cv.addEventListener('mouseleave',()=>inside=false);
+  cv.addEventListener('touchmove',e=>{if(e.touches[0])setM(e.touches[0].clientX,e.touches[0].clientY);},{passive:true});
+  const burst=()=>{const bi=inside?Math.max(0,Math.min(B-1,Math.round((mx-PAD.l)/((W-PAD.l-PAD.r))*(B-1)))):Math.floor(Math.random()*B);for(let i=0;i<16;i++)setTimeout(()=>spawn(inside?bi:Math.floor(Math.random()*B)),i*35);};
+  cv.addEventListener('click',burst);
+  cv.addEventListener('touchend',e=>{e.preventDefault();burst();},{passive:false});
+
+  if(reduced){draw();}
+  else{lastT=performance.now();raf=requestAnimationFrame(frame);
+    setTimeout(()=>{if(document.visibilityState!=='visible')draw();},500);}
 })();
 </script>
 </body>
